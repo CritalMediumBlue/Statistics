@@ -8,7 +8,7 @@ output:
 
 ### Computer Lab Class 1, 19.04.2023
 
-R is a programming language which is tailored to statistical applications. We use R within the graphical user interface RStudio. 
+R is a programming language which is tailored to statistical applications. We use R within the graphical user interface RStudio.
 
 Within RStudio, information about R can be obtained by the *Help* button. See for example the manual *An introduction to R* or the *RStudio Cheat Sheets*.
 
@@ -40,6 +40,10 @@ Information about R commands can be obtained using the question mark.
 
 For commands containing special characters one might use quotation marks (e.g. `?’%%’`). Typically, the examples at the end of the description are very useful.
 
+```{r}
+?`%%`
+```
+
 One may associate values to variables using the equality sign `=` or the assignment operator `<-`. The colon `;` separates two commands.
 
 ```{r}
@@ -47,11 +51,11 @@ x=5; y <- 2
 x; y
 ```
 
-
 Assigning a value to a variable does not produce output. One may force output using round brackets.
 
 ```{r}
 (x=3)
+(x <- 8)
 ```
 
 ## Univariate data: in- and output
@@ -66,7 +70,7 @@ data
 Using `write()`, one might store the data into a file.
 
 ```{r}
-write(data,file="mydata.dat")
+write(data, file="data/mydata.dat")
 ```
 
 Here data is stored in relative position to the working directory. The working directory can be accessed using `getwd()`. Please click on the button *Files*. This will display the directory tree, and you can open files via clicking on them.
@@ -74,7 +78,7 @@ Here data is stored in relative position to the working directory. The working d
 Using the command `scan()`, you can read the vector back into the computer. The default is a file containing numerical values, compare the documentation to `scan`.
 
 ```{r}
-data=scan("mydata.dat")
+data=scan("data/mydata.dat")
 data
 ```
 
@@ -88,11 +92,9 @@ A quick overview of data is obtained using `plot()`.
 plot(data)
 ```
 
-
 Sometimes you would like to save the graphics. For that purpose yu may evaluate the plot command in the console. Then the plot will be displayed in the `Plots` window, and you may use the `Export` function.
 
-**Remark (ordered data sequence)**
-From a given data sequence $x_1, \ldots, x_n$, one sometimes builds an ordered data sequence $x_{(1)}, \ldots, x_{(n)}$. This is implemented in R by the command `sort()`.
+**Remark (ordered data sequence)** From a given data sequence $x_1, \ldots, x_n$, one sometimes builds an ordered data sequence $x_{(1)}, \ldots, x_{(n)}$. This is implemented in R by the command `sort()`.
 
 ```{r}
 data
@@ -136,15 +138,11 @@ barplot(rbind( tab, tab/n), beside=TRUE)
 barplot(cbind( tab, tab/n), beside=TRUE)
 ```
 
-**Remark (ECDF)**
-A very important quantity for describing a data set of real numbers is its *empirical cumulative distribution function*. Given a data set $x_1, \ldots, x_n$, it is defined as the function $F_n : \mathbb{R} \rightarrow [0,1]$ where
+**Remark (ECDF)** A very important quantity for describing a data set of real numbers is its *empirical cumulative distribution function*. Given a data set $x_1, \ldots, x_n$, it is defined as the function $F_n : \mathbb{R} \rightarrow [0,1]$ where
 
-$$F_n (t) = h_n ((- \infty, t]) = \frac{1}{n} \sum_{i = 1}^n 1_{(- \infty, t]} (x_i)$$ 
+$$F_n (t) = h_n ((- \infty, t]) = \frac{1}{n} \sum_{i = 1}^n 1_{(- \infty, t]} (x_i)$$
 
-Here $1_{{}(- \infty, t]} (x)$ equals unity, if $x$ lies
-in the interval $(- \infty, t]$, i.e., we have $x \leq t$, and equals
-zero otherwise. Thus, the expression $F_n (t)$ is the relative frequency $h_n ((- \infty, t])$ of all $x_i$ satisfying $x_i \leq t$. Hence $t \mapsto F_n (t)$ is a monotonically increasing, piecewise constant function, which has jumps at $t =
-x_i$, for $i \in \{ 1, \ldots, n \}$.
+Here $1_{{}(- \infty, t]} (x)$ equals unity, if $x$ lies in the interval $(- \infty, t]$, i.e., we have $x \leq t$, and equals zero otherwise. Thus, the expression $F_n (t)$ is the relative frequency $h_n ((- \infty, t])$ of all $x_i$ satisfying $x_i \leq t$. Hence $t \mapsto F_n (t)$ is a monotonically increasing, piecewise constant function, which has jumps at $t = x_i$, for $i \in \{ 1, \ldots, n \}$.
 
 The empirical cumulative distribution function is plotted in R using `ecdf()`.
 
@@ -152,11 +150,32 @@ The empirical cumulative distribution function is plotted in R using `ecdf()`.
 plot.ecdf(data)
 ```
 
-Given $n$, the ordered data set can be reconstructed from the empirical cumulative distribution function. The jump height at $t$ is the relative frequency $h_n (\{ t \})$ of the value $t$ in the data set. The relative frequency $h_n ((a, b])$ of values within the interval $(a, b]$ is obtained as 
+Given $n$, the ordered data set can be reconstructed from the empirical cumulative distribution function. The jump height at $t$ is the relative frequency $h_n (\{ t \})$ of the value $t$ in the data set. The relative frequency $h_n ((a, b])$ of values within the interval $(a, b]$ is obtained as
 
 $$h_n ((a, b]) = F_n (b) - F_n (a)$$
 
 **Exercise 1:** Try to understand the last two statements using the above graphics.
+
+```{r}
+
+a <- (1 / length(data)) * sum((data > 9) & (data <= 10))
+b <- ecdf(data)(10) - ecdf(data)(9)
+
+round(a, 4) == round(b, 4)
+
+a <- (1 / length(data)) * sum((data > 7) & (data <= 8))
+b <- ecdf(data)(8) - ecdf(data)(7)
+
+round(a, 4) == round(b, 4)
+
+a <- (1 / length(data)) * sum((data > 8) & (data <= 9))
+b <- ecdf(data)(9) - ecdf(data)(8)
+
+round(a, 4) == round(b, 4)
+
+
+
+```
 
 Assume that a data set with heights of some people is given. Such a data set will not contain the same height twice. This is typical of a *continuous item*, in contrast to a *discrete item*. We generate a vector of 100 random numbers from the standard normal distribution using `rnorm`. (We will recall its definition below.) The `plot` command gives a first impression.
 
@@ -179,27 +198,33 @@ Using the argument `prob=TRUE` gives relative as opposed to absolute frequencies
 hist(data2, prob=TRUE)
 ```
 
-
 The argument yields a subdivision into approximately `n` classes. The number of subdivisions has to be suitably chosen, otherwise the underlying random mechanism is not well recognisable.
 
 ```{r}
 hist(data2, breaks=30)
 ```
 
-
-A plot of the empirical cumulative distribution function is very
-instructive.
+A plot of the empirical cumulative distribution function is very instructive.
 
 ```{r}
 plot.ecdf(data2)
 ```
 
-
 If you now take 10000 random numbers from the normal distribution instead of 100, you will see a very 'smooth' curve, at least up to resolution of the computer screen. Try this out! We will discuss the 'limiting curve' below.
+
+```{r}
+
+data2=rnorm(10000)
+plot.ecdf(data2)
+
+
+
+
+```
 
 ## Manipulating vectors
 
-Univariate data is stored in R as a vector. Keep in mind that this is not a vector as in linear algebra, but a data structure in R. Simple vectors can be generated as follows. 
+Univariate data is stored in R as a vector. Keep in mind that this is not a vector as in linear algebra, but a data structure in R. Simple vectors can be generated as follows.
 
 ```{r}
 1:10; 10:1
@@ -213,14 +238,13 @@ seq(1,10,by=2)
 sum(1:10); cumsum(1:10)
 ```
 
-Do you understand the command `cumsum()`? The command rep()` is quite useful.
+Do you understand the command `cumsum()`? The command rep()\` is quite useful.
 
 ```{r}
 rep(1,2); rep(1:2,3); rep(1:4, 3:6)
 ```
 
-It is possible to calculate with vectors in the same way as with
-numbers: Operations will be performed elementwise. This allows for very efficient coding.
+It is possible to calculate with vectors in the same way as with numbers: Operations will be performed elementwise. This allows for very efficient coding.
 
 ```{r}
 x=1:4; y=5:8
@@ -241,7 +265,6 @@ We investigate how to access vector entries.
 x
 x[2]; x[-2]; x[length(x)]; x[2:4]
 ```
-
 
 We assign new values to the vector `x`.
 
@@ -279,7 +302,17 @@ The following example extracts all elements of the data set which are bigger tha
 x[x>5]
 ```
 
-[**Exercise 2:**](#e2) Use `rnorm(1000)` to generate random numbers from the standard normal distribution. Determine the relative frequency of numbers outside the interval `(-2,2)`. 
+[**Exercise 2:**](#e2) Use `rnorm(1000)` to generate random numbers from the standard normal distribution. Determine the relative frequency of numbers outside the interval `(-2,2)`.
+
+```{r}
+
+x <- rnorm(1000)
+
+a <- x[x <= -2 | x >= 2]
+
+length(a)/1000
+
+```
 
 ## Simulation of simple stochastic models
 
@@ -296,8 +329,10 @@ The following graphics displays the relative frequencies $h_n (\{ 1 \})$ for val
 
 ```{r}
 x1=cumsum(x)/1:N; plot(x1)
-```
 
+lines(0.5+1/sqrt(1:N),col="red")
+lines(0.5-1/sqrt(1:N),col="red")
+```
 
 The R code works as follows. The vector contains the absolute frequencies. Dividing by the vector of number of tosses normalises the vector to relative frequencies.
 
@@ -309,6 +344,22 @@ sum(abs(x1-1/2)>=1/sqrt(1:N))/N
 
 [**Exercise 3:**](#e3) Repeat the above simulation using an unfair coin, which has probability `0.1` for head and probability `0.9` for tail. Use the argument `prob=c(0.1,0.9)` in your code, compare the documentation of `sample`. What do you observe?
 
+```{r}
+
+N=1000
+x=sample(0:1,replace=TRUE,N,prob=c(0.1,0.9))
+
+x1=cumsum(x)/1:N; plot(x1)
+
+sum(abs(x1-0.9)>=1/sqrt(1:N))/N
+
+plot(x1)
+
+lines(0.9+1/sqrt(1:N),col="red")
+lines(0.9-1/sqrt(1:N),col="red")
+
+```
+
 **Example (continuous item: difference times in radioactive decay)**
 
 We generate 1000 random numbers, which have the same properties as decay difference times from a radioactive specimen. (The corresponding distribution is the so-called exponential distribution.)
@@ -318,9 +369,9 @@ N=1000
 x=rexp(N)
 ```
 
-As the data set has no ties, we apparently deal with a continuous item. We would like to analyse relative interval frequencies for intervals $I = (a, b]$, i.e., 
+As the data set has no ties, we apparently deal with a continuous item. We would like to analyse relative interval frequencies for intervals $I = (a, b]$, i.e.,
 
-$$h_n (I) = \frac{\text{number of data in } I}{n}$$ 
+$$h_n (I) = \frac{\text{number of data in } I}{n}$$
 
 Again, we plot the relative interval frequencies $h_n (I)$ in relation to $n$. The sequence $(h_n (I))_{n \in \mathbb{N}}$ of relative interval frequencies might converge. The R code is similar to that above.
 
@@ -334,16 +385,16 @@ Together with `n`, the empirical cumulative distribution functions characterises
 
 **Example (convergence of ECDFs)**
 
-- typical 01 coin tossing: The sequence of empirical cumulative distribution functions seems always to converge to a discontinuous function $F$, where $F (x) = 0$ for $x < 0$, $F (x) = 1 / 2$ for $x \in [0, 1)$, $F (x) = 1$ for $x > 1$.
+-   typical 01 coin tossing: The sequence of empirical cumulative distribution functions seems always to converge to a discontinuous function $F$, where $F (x) = 0$ for $x < 0$, $F (x) = 1 / 2$ for $x \in [0, 1)$, $F (x) = 1$ for $x > 1$.
 
 ```{r}
 x=sample(0:1,replace=TRUE,10000)
 plot.ecdf(x[1:100]); abline(0.5,0,col="red")
 ```
 
-The command `abline(a,b)` adds a line with intercept `a` and slope `b`. 
+The command `abline(a,b)` adds a line with intercept `a` and slope `b`.
 
-- typical random arrival times in $[0, 1]$: The sequence of empirical cumulative distribution functions seems always to converge to a continuous function $F = F_U$, where $F_U (x) = 0$ for $x < 0$, $F_U (x) = x$ for $x\in [0, 1)$ and $F_U (x) = 1$ for $x > 1$.
+-   typical random arrival times in $[0, 1]$: The sequence of empirical cumulative distribution functions seems always to converge to a continuous function $F = F_U$, where $F_U (x) = 0$ for $x < 0$, $F_U (x) = x$ for $x\in [0, 1)$ and $F_U (x) = 1$ for $x > 1$.
 
 ```{r}
 x=runif(1000)
@@ -352,29 +403,33 @@ plot.ecdf(x[1:1000]); abline(0,1,col="red")
 
 Vary the above parameters in order to make the convergence statement more plausible!
 
+```{r}
+
+x=runif(1000)
+plot.ecdf(x[1:1000],col="blue")
+x=runif(10000)
+plot.ecdf(x[1:10000],col="red", add=T); abline(0,1)
+```
+
 In all of the above examples, the underlying random mechanism is apparently described by some limiting function $F$. We call such functions *cumulative distribution functions*. Here is the definition.
 
-**Definition (CDF)**
-A real function $F : \mathbb{R} \rightarrow [0, 1]$ is called *cumulative distribution function*] if
+**Definition (CDF)** A real function $F : \mathbb{R} \rightarrow [0, 1]$ is called *cumulative distribution function*] if
 
-- $\lim_{t \rightarrow - \infty} F (t) = 0$, $\lim_{t \rightarrow \infty} F (t) = 1$
+-   $\lim_{t \rightarrow - \infty} F (t) = 0$, $\lim_{t \rightarrow \infty} F (t) = 1$
 
-- $F$ is monotonically increasing.
+-   $F$ is monotonically increasing.
 
-- $F$ is right continuous, we write: $F (t) = \lim_{s \downarrow t} F(s)$ for all real $t$.
+-   $F$ is right continuous, we write: $F (t) = \lim_{s \downarrow t} F(s)$ for all real $t$.
 
-**Note:**
-A function $f : \mathbb{R} \rightarrow \mathbb{R}$ is *right continuous* in $x \in \mathbb{R}$, if for every sequence $(x_n)_{n \in \mathbb{N}}$, which converges to $x$ from the right, the sequence $(f (x_n))_{n \in \mathbb{N}}$ also converges to $f (x)$. A sequence $(x_n)_{n \in \mathbb{N}}$ converges to $x$ from the right, if $x_n > x$ for all $n$ and if the sequence $(x_n)_{n \in \mathbb{N}}$ converges to $x$.
+**Note:** A function $f : \mathbb{R} \rightarrow \mathbb{R}$ is *right continuous* in $x \in \mathbb{R}$, if for every sequence $(x_n)_{n \in \mathbb{N}}$, which converges to $x$ from the right, the sequence $(f (x_n))_{n \in \mathbb{N}}$ also converges to $f (x)$. A sequence $(x_n)_{n \in \mathbb{N}}$ converges to $x$ from the right, if $x_n > x$ for all $n$ and if the sequence $(x_n)_{n \in \mathbb{N}}$ converges to $x$.
 
 Apparently every continuous function is continuous from the right. Left continuity is defined analogously.
 
 Check these properties of a cumulative distribution function in the above examples! The probably most important cumulative distribution function is the (strictly monotonic and continuous) cumulative distribution function of the standard normal distribution
 
-$$F (t) = \frac{1}{\sqrt{2 \pi}} \int^t_{- \infty} e^{- x^2 / 2} d x,$$
-It gives the “limiting curve” for the ECDF of the data sequence. In the coin tossing example, the limiting curve of the first example is given by the cumulative distribution function of the *Bernoulli distribution* with parameter $1/2$, in the second example the limiting curve is the cumulative distribution function of the *uniform distribution* on the interval $[0, 1]$.
+$$F (t) = \frac{1}{\sqrt{2 \pi}} \int^t_{- \infty} e^{- x^2 / 2} d x,$$ It gives the "limiting curve" for the ECDF of the data sequence. In the coin tossing example, the limiting curve of the first example is given by the cumulative distribution function of the *Bernoulli distribution* with parameter $1/2$, in the second example the limiting curve is the cumulative distribution function of the *uniform distribution* on the interval $[0, 1]$.
 
-**Remark:**
-The (almost sure and uniform) convergence of the ECDF to the true CDF is of central importance in applied statistics: Very often we do not know the underlying random mechanism, and hence we do not know the CDF. But we can get information about it from a data set. If we have enough data, the ECDF will be a good approximation to the unknown CDF. In particular we can estimate parameters of the CDF by computing these on the ECDF. This method is called *bootstrap* or *Münchhausen principle*.
+**Remark:** The (almost sure and uniform) convergence of the ECDF to the true CDF is of central importance in applied statistics: Very often we do not know the underlying random mechanism, and hence we do not know the CDF. But we can get information about it from a data set. If we have enough data, the ECDF will be a good approximation to the unknown CDF. In particular we can estimate parameters of the CDF by computing these on the ECDF. This method is called *bootstrap* or *Münchhausen principle*.
 
 ### Proposals for solution
 
@@ -385,7 +440,7 @@ x=rnorm(1000)
 length(x[ x <=-2 | x>= 2])/1000
 ```
 
-Mind the following rule of thumb: For the normal distribution $N(\mu, \sigma^2)$ with expectation $\mu$ and standard deviation $\sigma$, about 95% of the data lie within two standard deviations around the expectation. The standard normal distribution is $N(0,1)$. 
+Mind the following rule of thumb: For the normal distribution $N(\mu, \sigma^2)$ with expectation $\mu$ and standard deviation $\sigma$, about 95% of the data lie within two standard deviations around the expectation. The standard normal distribution is $N(0,1)$.
 
 ##### Exercise 3: {#e3}
 

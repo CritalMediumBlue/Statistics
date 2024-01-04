@@ -1,0 +1,361 @@
+---
+title: "Introduction to Statistics and Statistical Programming"
+author: "Christoph Richard, FAU Erlangen-Nürnberg"
+output:
+  html_document: default
+  pdf_document: default
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+### Computer Lab Class 2
+
+## generating random numbers
+
+One might generate random numbers using a lottery draw machine. This is
+done by randomly drawing balls from a box consisting of numbered balls,
+and by writing down its number. Then one puts the ball back into the box
+(drawing with replacement), or one keeps the ball outside the box
+(drawing without replacement), and one repeats the above procedure.
+
+In R, this is implemented by the function `sample()`. The following code
+generates 20 random numbers with values `1`,`2`,`3` by drawing with
+replacement.
+
+```{r}
+sample(1:3,replace=TRUE,20)
+```
+
+It is possible to prescribe probabilities of occurence of the different
+numbers:
+
+```{r}
+sample(1:3,prob=c(1/6,1/3,1/2),replace=TRUE,20)
+```
+
+We realise that the command `sample()`{.verbatim} allows simulation of
+arbitrary *discrete distributions which take finitely many values*.
+
+[**Exercise 1.**](#e1) Simulate the German Lotto „6 aus 49".
+
+One of the simplest continuous distributions is the uniform distribution
+on the interval $(0,1)$. It has the cumulative distribution function
+$F(t) = t$ for $t\in (0,1)$, $F(t) = 0$ for $t\le 0$ and $F(t) = 1$ for
+$t\ge 1$. Random numbers from the continuous uniform distribution can be
+generated with `runif()` (*random uniform*).
+
+```{r}
+runif(10)
+```
+
+[**Exercise 2.**](#e2) Generate 100 random numbers from the distribution
+$U( -1,1)$, i.e., from the uniform distribution on the interval
+$( - 1,1)$. For this purpose, read the documentation using `?runif`.
+
+**Remark** For many common distributions, R provides particular
+implementations for random number generation. For example,
+`rnorm(100, 2, 4)` produces a vector containing $100$ random numbers
+from the normal distribution $N(\mu ,\sigma^2)$ where $\mu = 2$ und
+$\sigma = 4$. Such particular commands are convenient but they are in
+fact not necessary. In this course we will learn how to generate random
+numbers from an arbitrary distribution, given random numbers from the
+uniform distribution $U(0,1)$. This will be achieved using the
+(generalised) inverse function of the cumulative distribution function.
+
+## rudiments of programming
+
+We discuss the most important programming commands in R. A convenient
+concept is the `for` loop. A sequence of commands within the loop will
+be repeatedly executed, with increasing values of the counting index
+`i`. Here is an illustrative example.
+
+```{r}
+for (i in 1:3) {print(c(i,i^2))}
+```
+
+If the command sequence is only one command, then the curly brackets can
+be omitted. This rule also holds for a number of other programming
+commands.
+
+Let us use a `for` loop in order to obtain a vector containing squares.
+
+```{r}
+x=c(); for (i in 1:5) x[i]=i^2; x
+```
+
+The first command defines an empty vector. Otherwise R will not
+understand the assignment command within the loop.
+
+**Remark** Instead of a `for` loop, one might simply write `(x=(1:5)^2)`
+to obtain the same result. For more complicated algorithms loops are
+often the most convenient tool.
+
+Another important command is the `if` statement. Let us analyse the
+following example in order to understand what it does.
+
+```{r}
+if (1==2) print("1 ist gleich 2") else print("1 ist ungleich 2.")
+```
+
+The `while` loop repeats a sequence of commands until some stopping
+condition is satisfied.
+
+```{r}
+i=1; while( i<4) {i=i+1;print(i)}
+print(c(i, "end"))
+```
+
+Note that, in the previous example, R has converted the number `4` into
+the string `"4"`. This is because elements of vectors must always have
+the same type.
+
+Using these few commands, you are able to answer many elementary
+stochastic questions via simulation.
+
+[**Exercise 3.**](#e3) Write a program which throws random numbers 0 or
+1 with equal probability until the first 0 is produced. The output shall
+be the number of throws. Before you write the program, try to imagine
+how you would perform such a task if you were a computer. Hint: A slight
+modification of the above code works. What is the underlying
+distribution?
+
+Imagine you have written a program consisting of many lines and you want
+to execute it several times. In that case it is convenient to wrap it
+into a function. Here is a simple example.
+
+```{r}
+square = function(x) x^2
+square(10)
+```
+
+For information about the `function()` command, see the documentation
+using `?'function'`. You might also consult chapter 10 of *An
+Introduction to R*. You can find this document in the help browser.
+
+[**Exercise 4.**](#e4) Wrap the program of the previous exercise into a
+function.
+
+If you write a program please insert many comments. This is helpful for
+other people to understand what you have written and also helpful for
+you for later reconstruction. Comments start with a hash `#`.
+
+```{r}
+# (a+b)^2=a^2+b^2 (freshman's dream)
+```
+
+R provides functions for many statistical standard problems. For
+example, `ecdf(x)` defines the empirical cumulative distribution
+function of the data sequence `x`{.verbatim}. Remember that its value at
+position t is the relative frequency of the data in the data sequence
+which have value less or equal to $t$.
+
+```{r}
+x=1:4
+ecdf(x)(1);ecdf(x)(2.5)
+plot(ecdf(x))
+```
+
+**Remark** Note that every plot is written into a new window. If you
+want to draw two graphs into a single window, simply write `add=TRUE` in
+the second `plot` command. Also read the documentation `?plot`,
+especially `plot.default`.
+
+## elementary stochastic simulation: dice experiments
+
+We use a simulation in order to approximately determine the probability
+of a certain event. A random experiment with two outcomes *success* or
+*failure* will be given. If we repeat such an experiment n times
+independently from one another, then the relative frequency $h_n$ of
+*success* will "mostly" tend with $n$ towards a number $p$, which we
+interpret as *probability of success*. This phenomenon is known to us
+from coin tossing. We will later describe this phenomenon mathematically
+by the *law of large numbers*.
+
+In the first lecture we have already given a bound for the random error
+of the simulation: The unknown value $p$ will, *in most simulations*,
+lie within an interval of length $2/\sqrt{n}$ about $h_n$. Thus, if we
+want to determine $p$ up to $2$ digits, we could use
+$n = (2\cdot 100)^2 = 40000$.
+
+[**Exercise 5.**](#e5) We want to apply this insight to dice
+experiments. Please write a short program for each of the following
+problems. First think about an algorithm for the problem, i.e., write
+down the steps which have to be performed by the computer in order to do
+the simulation.
+
+A red and a green fair dice are thrown one after the other. We are
+interested in the events:
+
+1.  Both dice outcomes are different.
+
+2.  The sum of both dice outcomes is odd.
+
+These events have probabilities 5/6 and 1/2.
+
+Write a program which simulates the probabilities of these events
+through `n`-fold repetition of the single experiment. Hint: The
+remainder from integer division of `a` by `b` is obtained as `a%%b`. You
+can also use `%in%`. Use `?'%%'` or `?'%in%'` for the documentation.
+
+### Proposals for solution
+
+##### Exercise 1: {#e1}
+
+```{r}
+sample(1:49, replace=FALSE, 6)
+```
+
+##### Exercise 2: {#e2}
+
+```{r}
+runif(100, min=-1, max=1)
+```
+
+##### Exercise 3: {#e3}
+
+Here is an elegant solution. The underlying distribution is the
+geometric distribution, compare the lecture. It is straightforward to
+generalise the program to simulate any negative binomial distribution.
+
+```{r}
+i=1; while(sample(0:1,1)) i=i+1;
+i
+```
+
+##### Exercise 4: {#e4}
+
+We simulate the so-called geometric distribution. Unlike the previous
+example, is not necessary to pass an argument to the function.
+
+```{r}
+geo = function(){
+ i=1
+ while(sample(0:1,1)) i=i+1
+ i
+}
+```
+
+```{r}
+geo()
+```
+
+In fact there is an R command for the geometric distribution and, more
+generally, for the negative binomial distribution.
+
+```{r}
+rgeom(10,1/2)
+?rgeom
+rnbinom(10,1/2,size=5)
+?rnbinom
+```
+
+##### Exercise 5: {#e5}
+
+We consider the event 1. There are several possibilities of solution. We
+imagine that we repeat the single experiment *single throw of a red and
+a green dice* very often. The variable `H` contains the total number of
+successes from the single experiments. This is the number how often
+event 1 was obtained in the single experiments.
+
+```{r}
+# single experiment with outcome TRUE/FALSE (1/0)
+single=function(){
+  R=sample(1:6,1) # red dice
+  G=sample(1:6,1) # green dice
+  G != R
+}
+
+# n-fold repetition of the single experiment
+n=1000; H=0
+for (i in 1:n) {
+  H=H+single()
+}
+H/n
+```
+
+Please also use here n = 40000 and observe how well the true value 5/6
+will be simulated. You should note that the random error is mostly much
+smaller than our estimate 0.01.
+
+Alternatively we might imagine that we throw the red dice very often and
+then the green dice very often. This yields the compact code
+
+```{r}
+mean(sample(1:6,n,replace=TRUE)!=
+sample(1:6,n,replace=TRUE))
+```
+
+For the second event, the corresponding logical command is
+`(G+R)%%2==0`. It is also possible to use `%in%`, such as
+`G%in%c(2,4,6)`.
+
+[**Exercise 6.**](#e6) It is even possible to simulate the whole
+*distribution* of the relative frequencies. Repeat the experiment
+*"n-fold throw of a double dice"* $N$ times (where $N$ is very large),
+and use a histogram in order to display normalised frequencies. You
+should observe that the distribution is quite concentrated, the larger
+$n$ the better. For very large $n$, it is well described by a *normal
+distribution*. Indeed, the underlying random variable *number of
+successes* is binomially distributed. This distribution can be well
+approximated by a normal distribution, as we have argued in the lecture.
+
+##### Exercise 6: {#e6}
+
+Let us implement the first solution from above.
+
+```{r}
+N=1000; H=rep(0,N); n=100
+for (j in 1:N) {
+  for (i in 1:n) {
+   H[j]=H[j]+single()
+  }
+  H[j]=H[j]/n
+}
+```
+
+```{r}
+hist(H, prob=TRUE)
+```
+
+As can be seen from the histogram, the distribution is quite
+concentrated. The mean value is well described by the arithmetic mean
+$$\overline{x}=\frac{1}{n}\sum_{i=1}^n x_i$$
+
+The deviation from the mean can be described by the so called standard
+deviation $s$. It is the square root of the empirical variance $s^2$,
+which is defined by $$
+s^2=\frac{1}{n-1}\sum_{i=1}^n (x_i-\overline{x})^2
+$$ The corresponding R commands are `mean()` and `sd()`.
+
+```{r}
+mean(H); sd(H)
+```
+
+Alternatively, one may use the median $x_{0.5}$ and the interquartile
+range $IQR=x_{0.75}-x_{0.25}$. The corresponding R commands are
+`median()` and `IQR()`.
+
+```{r}
+median(x); IQR(x)
+```
+
+For random numbers from the normal distribution, approximately 95% of
+all values lie within two standard deviations about the mean value. Note
+that the rule of thumb from the lecture yields a much larger interval,
+which contains even 99% of all values in the following simulation.
+
+```{r}
+2*sd(H); 1/sqrt(n)
+mean(H>=mean(H)-2*sd(H) & H<= mean(H)+ 2*sd(H))
+mean(H>=mean(H)-1/sqrt(n) & H<= mean(H)+ 1/sqrt(n))
+```
+
+An approximation of the histogram by the probability density function of
+a normal distribution is given as follows. For $\mu$ one may take the
+mean of the data set, for $\sigma$ one might take the standard deviation
+of the data set. This leads to the following code.
+
+```{r}
+hist(H, prob=TRUE); plot( function(x) dnorm(x, mean(H), sd(H)), add=TRUE)
+```
