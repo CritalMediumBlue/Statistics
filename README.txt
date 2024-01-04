@@ -4,4 +4,6 @@ A few answers were generated with help of the LLM GPT-4-1106-preview.
 
 This document most likely contains errors. If you find something to improve or find a mistake and you know the right answer, please do everyone a favor and correct it. Thanks!
 
-The Authors are Prof. Dr. Christoph Richard, Leonie Wicht, Anna Vandebosch and Theresa Schmid, Friedrich-Alexander-Universität Erlangen-Nürnberg. 
+The Authors are Prof. Dr. Christoph Richard, Leonie Wicht, Anna Vandebosch and Theresa Schmid.
+Department für Mathematik
+Friedrich-Alexander-Universität Erlangen-Nürnberg. 
