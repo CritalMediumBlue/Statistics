@@ -9,7 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R1. Runs test of randomness
+## R1. Runs test of randomness 
 
 The data sequence R1.dat describes the amount of dead fish in kg per year, which has been found along a certain river within a period of 16 years between 1995 and 2010. Use the runs test in order to test the hypothesis that the amount of dead fish obeys random fluctuations.
 
