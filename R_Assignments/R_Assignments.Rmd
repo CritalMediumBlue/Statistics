@@ -1,0 +1,129 @@
+---
+title: "R Assignments"
+author: "Prof. Dr. Christoph Richard, Leonie Wicht, Anna Vandebosch and Theresa Schmid"
+date: "2024-01-04"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R1. Runs test of randomness
+
+The data sequence R1.dat describes the amount of dead fish in kg per year, which has been found along a certain river within a period of 16 years between 1995 and 2010. Use the runs test in order to test the hypothesis that the amount of dead fish obeys random fluctuations.
+
+1.  Read the data sequence into your computer and determine the scale of measure.
+2.  Dichotomise the data sequence using the algorithm discussed in the lecture.
+3.  Use the command `rle` in order to determine the number of runs. What is the test decision? Give all details of the calculation.
+4.  What do you learn concerning the validity of the randomness hypothesis?
+
+*Remark:* Read the documentation of the command `rle`. Using `$lengths` you can extract the vector of lengths from the output of `rle`.
+
+
+## R1. Solution
+
+1. Read the data sequence into your computer and determine the scale of measure.
+```{r}
+data <- scan(file="Data/R1dat.sec")
+data <- as.vector(data)
+
+```
+
+
+The variable (amount of dead fish in kg per year, which has been found along a certain river within a period of 16 years between 1995 and 2010) has a ratio scale, it is metric (continuous).
+
+
+2. Dichotomise the data sequence using the algorithm discussed in the lecture.
+
+We will use the median as a cut-off criterion. A data point is converted to 0 if it is equal or less than the median and 1 otherwise (in R FALSE corresponds to 0 and TRUE to 1).
+
+
+```{r}
+(data_dich <- data > median(data))
+```
+
+3. Use the command `rle` in order to determine the number of runs. What is the test decision? Give all details of the calculation.
+
+The command rle (Run Length Encoding) computes the lengths and values of runs of equal values in a vector (cf R help). We can confirm the lengths of the runs comparing it to the output of the previous part.
+
+```{r}
+runs <- rle(data_dich)
+(rl <- runs$lengths)
+```
+
+The number of runs here is 6.
+
+The mean number of runs in a sequence of length n, n0 zeros and n1 ones is
+
+
+$$
+\mu = \frac{2n_0n_1}{n} + 1 \stackrel{\text{here}}{=} 2 \cdot \frac{8 \cdot 8}{16} + 1 = 9
+$$
+
+
+The variance of the number of runs is
+
+$$
+\sigma^2 = \frac{(\mu-1)(\mu -2)}{(n-1)} \stackrel{\text{here}}{=} \frac{8 \cdot 7}{15} = 3.733
+$$
+
+We accept the hypothesis of randomness if the number of runs is between $\mu - 2\sigma$ and $\mu + 2\sigma$.
+
+$$
+[\mu - 2\sigma, \mu + 2\sigma] = [5.13, 12.86]
+$$
+
+As the number of runs in our data set (6) is included in the interval, we have to accept the hypothesis that the underlying process of finding dead fish is random.
+ 
+4. What do you learn concerning the validity of the randomness hypothesis?
+
+The approximation that is used in this test (95% of random experiments have number of runs in the above interval) is only good for n0, n1 ≥ 20. Thus we can’t say anything specific about the randomness of the data set because it is to small. Besides, the runs test has low sensitivity (high error of type II; runs test is test against randomness), thus we might accept randomness although it is false.
+
+
+## R2. Data analysis
+
+There were altogether 308 soccer games during the 2008 european soccer championship qualification. The number of goals per match is stored in the file R2.dat. 
+
+1. Create a table of the absolute goal frequencies.
+2. Create a bar chart of the relative goal frecuencies. Create a histogram of relative goal frecuencies. Compare the graphics. Can you identify the "outlier"?
+3. Draw the empirical cumulative distribution function.
+
+## R2. Solution
+
+1. Create a table of the absolute goal frequencies.
+
+```{r}
+
+data <- scan(file = "Data/R2dat.sec")
+data <- as.vector(data)
+(table <- table(data))
+
+```
+
+2. Create a bar chart of the relative goal frecuencies. Create a histogram of relative goal frecuencies. Compare the graphics. Can you identify the "outlier"?
+
+```{r}
+
+barplot(table / length(data), xlab = "Goals",
+        ylab = "Relative frequency", main = "Relative goal frequencies")
+
+hist(data, freq = FALSE, xlab = "Goals",
+     ylab = "Relative frequency", main = "Relative goal frequencies")
+
+```
+
+The differences are:
+
+- the bar chart has one bar for every number of goals that ocurred in these 308 matches, so you don’t have space between the outlier and the rest
+- the histogram has the breaks in the natural numbers so you can’t see easily the frequency of a specific number of goals, but here you see that there was an outlier without looking on the x-axis
+
+
+3. Draw the empirical cumulative distribution function.
+
+```{r}
+
+plot(ecdf(data), xlab = "Goals", ylab = "Cumulative frequency",
+     main = "Empirical cumulative distribution function")
+
+```
