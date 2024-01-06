@@ -39,6 +39,24 @@ arbitrary *discrete distributions which take finitely many values*.
 
 [**Exercise 1.**](#e1) Simulate the German Lotto „6 aus 49".
 
+```{r}
+# Let's make it easier to win by drawing only 4 numbers from 1 to 20.
+winner_numbers = sample(1:20, replace=FALSE, 4)
+winner_numbers = sort(winner_numbers)
+
+trials = 0
+lose = TRUE
+while (lose) {
+  trials = trials + 1
+  my_numbers = sample(1:20, replace=FALSE, 4)
+  my_numbers = sort(my_numbers)
+  lose = !all(my_numbers == winner_numbers)
+}
+
+print(paste("You won after", trials, "trials."))
+```
+
+
 One of the simplest continuous distributions is the uniform distribution
 on the interval $(0,1)$. It has the cumulative distribution function
 $F(t) = t$ for $t\in (0,1)$, $F(t) = 0$ for $t\le 0$ and $F(t) = 1$ for
@@ -119,6 +137,20 @@ be the number of throws. Before you write the program, try to imagine
 how you would perform such a task if you were a computer. Hint: A slight
 modification of the above code works. What is the underlying
 distribution?
+
+```{r}
+x=1
+throws=0
+
+while (x == 1) {
+  x = sample(0:1, 1)
+  throws = throws + 1
+}
+
+print(paste("Number of throws:", throws))
+
+```
+
 
 Imagine you have written a program consisting of many lines and you want
 to execute it several times. In that case it is convenient to wrap it

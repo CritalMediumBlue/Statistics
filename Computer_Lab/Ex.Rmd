@@ -1,0 +1,784 @@
+---
+--- title: "gg" author: "ffff" date: "2023-09-15" output: pdf_document ---
+---
+
+```{r setup, include=FALSE} knitr::opts_chunk$set(echo = TRUE)}
+```
+
+## 1. Green \<= Red:
+
+Consider the random experiment of independently throwing a red and a green dice. We are interested in the event: the green number is not greater than the red number.
+
+(a) (4 p.) Write a program that carries out this experiment N = 1000 times and use the program to determine an estimate of the probability of the event you are looking for.
+
+(b) (1 p.) Provide a two-sided 99% confidence interval for your estimate. Use the confidence interval from the binomial test binom.test.
+
+(c) (1 P.) Is the true probability in the calculated confidence interval? Give a precise answer.
+
+```{r}
+#a
+N=1000
+Green=sample(1:6, N, replace = T)
+Red=sample(1:6,N,replace = T)
+x=(Green<=Red)
+mean(x)
+
+#b
+binom.test(sum(x), N, p=mean(x), alternative = "two.sided", conf.level = 0.99)
+binom.test(sum(x), N, p=0.5, alternative = "two.sided", conf.level = 0.99)
+confidence= c( 0.5289143, 0.6104100)
+
+#c
+total_combinations=6*6
+total_where_g= sum(1:6)
+total_where_g/total_combinations
+```
+
+```{r}
+binom.test(10,500, p=0.01, alternative = "less")
+```
+
+## 2. Dinosaur Mass and Length
+
+Given is a data set with reconstructed sizes and masses of various dinosaur species.
+
+1\. Read the data record.
+
+2\. Plot size versus mass in a scatterplot.
+
+3\. Make a guess as to which functional class is the basis here.
+
+4\. Run a regression and plot the obtained regression curve along with the values. How satisfied are you with the curve you received?
+
+5\. You are unsure whether the data contains Outlier. How can you still get a satisfactory regression?
+
+```{r}
+#a
+data=read.csv("Mass_length.dat", sep="\t")
+
+#b
+mass=data$Mass..kg.
+leng=data$FL..mm.
+plot(mass, leng)
+
+#c looks exponential
+plot(log(mass), log(leng))
+regresion=lm(log(leng)~log(mass))
+abline(regresion, col="red")
+
+a=exp(regresion$coefficients[1])
+b=regresion$coefficients[2]
+
+plot(mass, leng)
+curve(a*x^b, add=T, col="red")
+
+```
+
+## 3. Cows on a diet
+
+In a farm with 200 cattle, 100 cattle were given concentrated feed of type 1 and 100 cattle were given concentrated feed of type 2. After a certain period of time, the weight gain of the cows was recorded in kg. These values can be found in the file R3.csv.
+
+(a) (1 p.) Read the above file.
+
+(b) (1 P.) Use a suitable test with error probability a = 0.1 to check whether the weight gain in each of the two groups can be described by normally distributed random variables.
+
+(c) (1 P.) Use a suitable test with error probability a = 0.1 to check whether the underlying random variables have the same variance.
+
+(d) (3 P.) Based on your results from b) and c), use a suitable test to check the hypothesis that variety 1 causes a higher weight gain than variety 2 with error probability a = 0.025. Enter the null hypothesis and Alternative explicitly. Justify your decision to test.
+
+```{r}
+#a
+cows=read.csv("data_cows.dat")
+type1=cows$type_1
+type2=cows$type_2
+library(car)
+qqPlot(type1)
+qqPlot(type2)
+#looks normal
+shapiro.test(type1)
+shapiro.test(type2)
+#they have the samea variance
+var.test(type1, type2)
+#H0: type1<=type2
+#Ha: type1>type2
+boxplot(type1, type2)
+t.test(type1, type2, var.equal = TRUE, paired = F, alternative = "greater", conf.level = (1-0.025))
+```
+
+## 4. Is this a fair dice?
+
+You want to know if the numbers from some file were produced using a fair dice.
+
+\- Read in the numbers.
+
+\- Check if they come from a uniform distribution on {1,2,3,4,5,6} using a suitable test. What is the p-value? What is your test decision? (alpha = 0.05)
+
+\- Check if the probability to get a "6" has probability ⅙ using a binomial test. What is the p-value and your test decision? (alpha = 0.05)
+
+\- Using these two test-decisions, would you suggest the dice is fair? Explain your decision
+
+```{r}
+x=sample(1:6, 120, replace = T, prob = c(rep(1/6,5), 1.6/6))
+table(x)
+
+binom.test(sum(x==6), length(x), p=1/6)
+```
+
+*Chi\^2-Test: reject H_0, Binomial-Test: accept H_0. Maybe argue that in the second case you could do a type II error which has high probability.*
+
+```{r}
+
+x=sample(1:6, 120, replace = T, prob = c(rep(1/6,5),1.5/6))
+tab=table(x)
+barplot(tab)
+x
+chisq.test(tab, p=rep(1/6,6))
+#P-value is smaller thatn alpha. We might reject the null hipothesis
+?binom.test()
+binom.test(tab[6], 120, p=1/6, alternative = "greater")
+```
+
+## 5. Unit square to check uniform distribution
+
+We want to know if some numbers z_1,\... , z_2n are from the uniform distribution U(0,1). For that, we look at the points in the unit square: we define x_i = z_i and y_i = z\_(n+i).
+
+For each two pairs (x_i, y_i) and (x_j, y_j) (with i =/= j), we compute the squared euclidean distance: (x_i-x_j)\^2+(y_i-y_j)\^2. Our test statistic is the smallest of these numbers.
+
+-   Write a function that for a sequence of numbers z_1,\...,z_n computes the test statistic.
+
+-   Let n=10. Simulate the distribution of the test statistic under the null hypothesis that the numbers z_i come from U(0,1).
+
+-   The distribution of the test statistic is a distribution which we often used in the lecture. Try to find this distribution using an appropriate graphical tool.
+
+Probably chi\^2-distribution with 2 degrees of freedom.
+
+```{r}
+
+
+distance=function(r){
+  Statistic=c()
+  n=length(r)/2
+  x=r[1:n]
+  y=r[(n+1):(2*n)]
+  for (i in 1:n) {
+    for (i in 1:n) {
+      if(i!=j){
+        dist_eucl=((x[i]-x[j])^2)+((y[i]-y[j])^2)
+        Statistic=c(Statistic,dist_eucl)
+      }
+      
+    }
+    
+  }
+  return(min(Statistic))
+}
+
+n=10
+Tn=numeric(100000)
+for (o in 1:100000) {
+  z_2n=runif(2*n)
+  Tn[o]=distance(z_2n)
+}
+hist(Tn, breaks = 40)
+```
+
+```{r}
+library(car)
+qqPlot(Tn, distribution = "chisq", df=1, cex=0.3)
+```
+
+## 6. Normal distribution
+
+Read in 50 numbers. You want to check if they come from a normal distribution.
+
+-   Check the hypothesis using an appropriate graphical tool.
+
+-   What are your estimates for the mean and variance of the distribution?
+
+-   Do you think the numbers are from a normal distribution?
+
+Numbers were discrete and had ties so probably no normal distribution.
+
+```{r}
+x=rnorm(50, 50, 20)
+
+library(car)
+qqPlot(x, distribution = "norm")
+
+mean(x)
+sqrt(var(x))
+
+
+shapiro.test(x)
+```
+
+## 7. Metabolic rate vs Mass
+
+Read in data from a csv-file with information about age, mass (M) and metabolic rate (MR) of some animals.
+
+-   Plot the metabolic rate against the mass. Also plot it using simple logarithmic and doubly logarithmic axes. Which one fits best? Give an explicit formula for the class of this relationship
+
+-   Use a linear regression to fit the relationship that you chose before. Which are the parameters?
+
+-   Analyse the assumption if the deviations from the fit are statistical fluctuations.
+
+-   Use the summary-function to find an approximate 95% confidence interval for the parameters.
+
+```{r}
+data=read.csv("observa.csv", sep=";")
+mass=data$body.mass
+metabolic=data$metabolic.rate
+
+plot(log(mass), metabolic, cex=0.4)
+plot(mass, log(metabolic), cex=0.4)
+plot(log(mass), log(metabolic), cex=0.4)
+
+#log log fits best
+#The euqtion that better describes it is y=(x^m)*B
+
+model=lm(log(metabolic)~log(mass))
+abline(model, col="red")
+a=model$coefficients[1]
+b=model$coefficients[2]
+
+x0=1:120
+y0=(x0^b)*exp(a)
+
+#plot(mass, metabolic, cex=0.4)
+#curve((x^b)*exp(a), add=T, col="red" )
+#plot(log(mass), metabolic, cex=0.4)
+#curve((exp(x)^b)*exp(a), add=T, col="red" )
+#plot(mass, log(metabolic), cex=0.4)
+
+#curve(log((x^b)*exp(a)), add=T, col="red" )
+#plot(log(mass), log(metabolic), cex=0.4)
+
+#curve(log((exp(x)^b)*exp(a)), add=T, col="red" )
+
+hist(model$residuals)
+
+shapiro.test(model$residuals)
+
+
+
+qqPlot(model$residuals, distribution = "chisq", df=length(model$residuals)-1)
+
+summary(model)
+
+c( a-2*0.067216 , a+ 2*0.067216)
+exp(c( a-2*0.067216 , a+ 2*0.067216))
+c( b-2*0.008124 , a+ 2*0.008124)
+```
+
+)
+
+Allometric growth fits best: MR = a\*M\^b, doubly logarithmic: log(MR) = log(a) + b\*log(M).
+
+Don't forget to convert the parameter accordingly (to get a you have to exponentiate the intercept parameter of lm(log(MR)\~log(M)).
+
+Probably use the interval parameter +/- 2\*standard error (for the intercept you need to exponentiate it) as a 95% confidence interval.
+
+## 8. **Alpha-trimmed mean**
+
+1.  Simulate the alpha-trimmed mean with N = 1000 sequences and n = 100 entries.
+
+2.  plot the means from a)
+
+3.  Give the distribution
+
+```{r}
+N=1000
+n=100
+means=numeric(N)
+for (i in 1:N) {
+  x=runif(n)
+  means[i]=mean(x, trimm=0.1)
+}
+
+hist(means, breaks = 20)
+qqPlot(means, distribution = "norm")
+shapiro.test(means)
+```
+
+## 9. **nls()**
+
+1.  Plot data (x,y) from R3 in scatterplot
+
+2.  The data probably show a correlation y=a\*x\^b. Approximate a and b using the data point x=1 and x=10
+
+3.  Use nls() to exactly determine a and b
+
+```{r}
+datos=read.csv("observa.csv", sep=";")
+datos1=datos$body.mass
+datos2=datos$metabolic.rate
+plot(log(datos1),log(datos2), cex=0.4)
+
+x=c(datos1[10], datos1[1000])
+y=c(datos2[10], datos2[1000])
+
+model=lm(log(y)~log(x))
+a1=model$coefficients[1]
+b1=model$coefficients[2]
+abline(model, col="red")
+c(exp(a1),b1)
+
+model2=nls(datos2~a*datos1^b, start = list(a=3,b=2))
+
+newdata1 = seq(-20, 5, length.out = 100)
+predictions = predict(model2, newdata = list(datos1 = newdata1)) 
+lines(newdata1, predictions, col = "blue")
+```
+
+## **10. Lotto 1 aus 49**
+
+1.  Plot the absolute frequencies in a barplot
+
+2.  We want to test for deviations from a uniform distribution on 1 to 49. Suggest a test, give both hypotheses and the distribution given H0. Perform the test statistic at level alpha=0.1. What is your decision?
+
+3.  How can you be sure that your favoured hypothesis is true? 
+
+4.  Assume you want to test for a uniform distribution. Explain the statistical problem behind this and give a suitable test as well as both hypotheses.
+
+```{r}
+
+data=sample(1:49, 1000, replace=T)
+tab=table(data)
+barplot(tab)
+#We have to use the chisq test to test if the data is uniformly distributed
+#H0: the data is uniformly distributed
+#Ha: the data is not uniformly distributed
+chisq.test(tab, p=rep(1/length(tab), length(tab)))
+```
+
+## **11. Monte Carlo for Integral**
+
+1.  We want to estimate the value of the Integral. Estimate the value of the integral using a Monte Carlo alghorithm.
+
+![](https://lh6.googleusercontent.com/odMluIy2GF3U045NubXaVb76Eju86prjZ586APhOt9WobGpTQ6lri09g3o381ier83lYpYJo8DQiRLVSAQWtK387TEF93sJOKxfkJ9uim9b_kaABNwYwE-79Y7mvEpZk7jBGc5Ext1zipw2xgKwIqA){width="268"}
+
+1.  give the general formula for a 99% asymptotic confidence interval and explain all the components. How big does n have to be so that it has the length 0.1?
+
+2.  give the concrete 99% confidence interval using your simulation from a)
+
+```{r}
+I=function(t){
+  i=(log(1-t^2)^2)/(1-t)
+  return(i)
+}
+N=1000
+Resuts=numeric(N)
+for (i in 1:N) {
+  Resuts[i]=I(runif(1))
+}
+mean(Resuts)
+n = ((2*qnorm(1-0.005)*sd(Resuts))/0.1)
+n
+hist(Resuts)
+
+0.25^0.5
+```
+
+## **12. A and B have money to gamble**
+
+We consider the following game: Player A starts with one euro, player B starts with 2 euros. In each round, the winner receives one euro from the loser. The probability of winning per round for player A is twice as high as that of player B. The game continues until one player has no more money. What is the probability that Player A will win in the end?
+
+(a) (3P) Write a program that simulates the game. It should output the value 1 if player A ended up winning, and the value 0 if player B ended up winning.
+
+(b) (1P) Use the program from (a) to simulate the probability of winning for player A. Enter the result rounded to two decimal places.
+
+(c) (1P) How many games must be played to achieve the accuracy required in (b)? Give a suitable value (with a short theoretical justification).
+
+```{r}
+
+game=function(){
+  A=1
+  B=2
+  while (A!=0 & B!=0) { #the game is played until on of the players has no money left
+   winner=sample(c("A", "B"), 1, prob = c(2/3,1/3)) #choose a winner
+   if (winner=="A"){A=A+1;B=B-1} #B pays A one euro
+   else {A=A-1;B=B+1}#A pays B one euro
+  }
+  if(A>B){return(1)} #A won
+  else if(A<B){return(0)} # B won
+}
+
+N=10000
+A_won=numeric(N)
+for (i in 1:N) {
+  A_won[i]=game() #play th game N times
+}
+p=mean(A_won)#initial estimate of the probability of A winning
+Za=qnorm(1-0.01/2)#Z-value
+CI=c(p-Za*sqrt(p*(1-p)/N),p+Za*sqrt(p*(1-p)/N))# 99% confidence interval
+CI
+CI[2]-CI[1]#length of the confidence interval
+#We want the length of the confience interval to be 0.01, how big does N has to be?
+N1=((2*Za)^2)*p*(1-p)/(0.01^2)#Find N from the CI
+N1=round(N1)
+N1
+
+#Play the game again
+A_won=numeric(N1)
+for (i in 1:N1) {
+  A_won[i]=game() #play th game N times
+}
+p=mean(A_won)#First estimate of the probability of A winning
+p
+Za=qnorm(1-0.01/2)#Z-value
+CI=c(p-Za*sqrt(p*(1-p)/N1),p+Za*sqrt(p*(1-p)/N1))
+CI
+CI[2]-CI[1]
+```
+
+## **13. Candy vouchers**
+
+A candy manufacturer sells candy packs that also contain vouchers. The manufacturer claims that each pack contains an average of 5 vouchers. A customer who received fewer vouchers complains. A consumer protection employee now buys a total of 10 packs in various stores. He receives the following values for the number of vouchers: 9, 10, 8, 4, 8, 3, 0, 10, 15, 9. Do these numbers support the customer's complaint?
+
+(a) (2P) Based on a normal approximation, suggest an appropriate test and state the null hypothesis and counter-hypothesis. Also provide the test statistics and explain the variables that occur.
+
+(b) (2P) Carry out the test at error level a = 0.05. What conclusion do you come to?
+
+(c) (1P) How confident can you be that the hypothesis you have decided on is true? What quantitative answer can be given in this case, based on a normal approximation? (No calculation is required here, just an explanation of the basic procedure.)
+
+```{r}
+mu0=5
+#H0: mu>=mu0
+#Ha: mu<mu0
+x=c(9, 10, 8, 4, 8, 3, 0, 10, 15, 9)
+t.test(x, alternative = "two.sided", mu=5, conf.level = 0.95)
+```
+
+## **14. Cancer**
+
+The data set R3. dat contains data for the 301 counties in North Carolina, South Carolina and Georgia (USA). The first column contains the number of white residents in 1960 (in thousands), the second column contains the number of breast cancer deaths (mortality) between 1950 and 1960.
+
+(a) (1P) Read in the data and create a Scatter plot of mortality y versus population x.
+
+(b) (2P) What connection y = f(x) does the scatter diagram suggest? Make a guess for a suitable class of functions and determine the parameters using the least squares method. Specify the parameters and their standard deviations explicitly.
+
+(c) (2P) Plot the residuals. Does the plot confirm the assumption of a model Y¿ = ƒ(X¿) + §¿ for independent identically distributed disturbances &? If not, do you have a suggestion on how to improve the model?
+
+```{r}
+data=read.csv("linear_dataset(1).csv")
+residents <- seq(from=100,to=1000,by=1) 
+cancers <- rnorm(n=length(residents),1.4,0.03)*residents^rnorm(n=length(residents),1.4,0.03) 
+plot(residents, cancers, cex=0.3, lwd=1.5)
+
+model=nls(cancers~a*residents^b, start=list(a=2, b=2))
+summary(model)
+
+x=seq(10,1000, by=1)
+y=1.39800*x^1.40297
+
+curve(1.39800*x^1.40297, col="red", add=T)
+summary(model)
+```
+
+## **15. Binomial goodnes-of-fit**
+
+Someone claims that the random numbers in file R4 come from a binomial distribution B(8, p), with an unknown p.
+
+(a) (1P) Suggest an appropriate test to test this claim. State the null hypothesis and the alternative.
+
+(b) (2P) Give a formula for the test statistic and explain the quantities that occur. What is the distribution of the test statistic under the null hypothesis?
+
+(c) (1P) State the acceptance range for the null hypothesis for a = 0.05.
+
+(d) (1P) Read the data. Carry out the test at error level a = 0.05 and state the test decision (with reasons).x=
+
+```{r}
+1-pnorm(2.4)
+```
+
+```{r}
+
+x=rbinom(30, size = 8, prob = 0.4183)
+
+#H0: the numbers come from a B(8,p)
+#Ha: the numbers do not come from a B(8,p)
+#Binomial test
+tablita=table(x)
+
+total_succes=sum(x)
+total_trials=length(x)*8
+
+prob=total_succes/total_trials
+
+plot(dbinom(0:8, 8, prob), type="h")
+expected=dbinom(0:8, 8, prob)
+tab=table(factor(x, levels = 0:8))
+chisq.test(tab, p=expected)
+
+```
+
+## **16. Normal distribution**
+
+Assume that we have a data sequence x1,...,x10 from a N(u, 2) distribution where μ is unknown. Given the niveau a = 0.1 we want to decide whether μ = 0 holds and choose as test statistic the smallest 0.5---quantile.
+
+a)  (4 Points)
+
+Simulate the distribution of Tn for N = 1000 under N(0, 2).
+
+b)  (2 Points)
+
+Use this simulated distribution to determine a suitable acceptance region for Ho. Do the construction in analogy to the Gauß-test.
+
+c)  (2 Points)
+
+Use a suitable graphical tool to estimate the distribution of the test statistic and give suitable estimates for the parameters of the distribution.
+
+d)  (2 Points)
+
+Compare this test to the corresponding Gauß test. Which test do you prefer?
+
+```{r}
+
+alpha=0.1
+N=1000
+Tn=numeric(N)
+for (i in 1:N) {
+  mu=0
+  x=rnorm(10,mu,2)
+  Tn[i]=quantile(x, 0.5, type=1)
+}
+
+hist(Tn, breaks = 20)
+#Ho: mu0=mu
+#Ha: mu0!=mu
+mean=mean(Tn)
+sd=sd(Tn)
+lower=qnorm(alpha/2, mean, sd)
+higher=qnorm(1-alpha/2, mean, sd)
+aceptance_regieon=c(lower, higher)
+aceptance_regieon
+
+qqPlot(Tn)
+abline(mean, sd, col="red", lwd=2)
+
+Tng=numeric(N)
+for (i in 1:N) {
+  x=rnorm(10,0,2)
+  Tng[i]=(mean(x)-0)/sqrt(var(x)/length(x))
+}
+hist(Tng, breaks = 20)
+meang=mean(Tng)
+sdg=sd(Tng)
+lowerg=qnorm(alpha/2, meang, sdg)
+higherg=qnorm(1-alpha/2, meang, sdg)
+aceptance_regieong=c(lowerg, higherg)
+aceptance_regieong
+```
+
+## 17. Lorenz Lake
+
+The file R21.tab contains a table of the water temperature (in Celsius) of the Lurenz lake with respect to the depth (in meter) at some day in August.
+
+a)  Plot the temperature against the depth. Use a scatterplot.
+
+b)  Perform a linear regression and plot the regression line into the plot of a)
+
+c)  Plot the data set on a logarithmic scale. Calculate the parameters of the corresponding line and draw it in the same plot.
+
+d)  Which line do you prefer? Draw it at the same plot (i.e. not the logarithmic one)
+
+```{r}
+data=read.csv("R21.tab", sep="\t")
+depth=data$X0
+temperature=data$X24.8
+plot(depth, temperature, cex=0.3, lwd=2.5)
+
+model=lm(temperature~depth)
+abline(model, col="red", lwd=1.5)
+
+plot(log(depth), log(temperature), cex=0.3, lwd=2.5)
+model_log=lm(log(temperature)~log(depth))
+abline(model_log, col="red", lwd=1.5)
+
+summary(model)
+summary(model_log)
+
+#I choose the model_log because the R squared i higher, and the p-value is lower
+```
+
+# 18. 6 aus 49
+
+The file R2. tab contains a table with the absolute frequencies of the numbers 1 to 49 in the Lotto 6 out of 49 since 1955.
+
+(a) (1.5 P.) Read the above file and create a bar chart of the absolute frequencies. You don't need to write down the table.
+
+(b) (2 p.) You are interested in the question of whether all numbers occur with the same frequency. Specify a suitable test and formulate the null hypothesis and counter-hypothesis. For both hypotheses, explicitly state all relevant distributions.
+
+(c) (1.5 P.) Carry out the test for error probability a = 0.1. Indicate the p-value of the test and formulate your test decision (with reasons).
+
+(d) (1 p.) How confident can you be that the hypothesis you have decided on is true? Can you give a satisfactory quantitative answer here?
+
+```{r}
+data=read.csv("table")
+numbers=data$x
+frec=data$Freq
+barplot(frec)
+data1=cbind(numbers, frec)
+#H0: Th numbers come from the uniform distribution
+#Ha: The numbrs are not sampled from the uniform istribution
+expected_prob=rep(1/49, 49)
+alpha=0.1
+chisq.test(frec, p=expected_prob)
+1-0.1653
+```
+
+# 19. Transistors
+
+The file R4. tab contains a table with the number of transistors on processors manufactured between 1970 and 2011.
+
+(a) (1 P.) Read the above file and create a scatterplot of the data.
+
+(b) (2 p.) Also simply plot the data logarithmically. The simple logarithmic plot suggests a linear relationship. Calculate the parameters of the best-fit line and specify the parameters. Plot the single logarithmic data along with the best-fit line on a graph.
+
+(c) (1 p.) For the period 1970 to 2015, plot the original (non-logarithmic) data together with the curve obtained by transforming the best-fit line.
+
+(d) (2 p.) Calculate the time in which the number of transistors per processor doubles. What value results?
+
+```{r}
+data=read.csv("trans")
+year=data$year
+count=data$count
+
+
+plot(year, log(count), cex=0.3, lwd=2)
+model=lm(log(count)~year)
+abline(model, col="red", lwd=1.5)
+
+a=exp(model$coefficients[1])
+b=model$coefficients[2]
+x=seq(1970,2020, by=1)
+plot(year, count, cex=0.3, lwd=2)
+curve(a*exp(x*b), col="red", add=T, lwd=2)
+summary(model)
+a
+b
+
+log(2)/b
+```
+
+# 20. Ozone
+
+In an experiment on the effects of ozone, a group O of 22 rats, 70 days old, were kept in an ozone-containing environment for 7 days. Their weight gain was then measured. A control group K of 22 rats of comparable age were kept in an ozone-free environment for 7 days and their weight gain was then measured. The file R2. tab contains the table with the weight gains. We expect ozone to have a negative impact on growth.
+
+(a) (1.5 P.) Read the file and create boxplots of the data. Are these samples connected or unconnected?
+
+(b) (1.5 P.) They wanted to use the experiment to confirm that ozone has a negative effect on growth. First, assume that a normal distribution assumption is justified. Which test do you use then? State the null hypothesis and alternative.
+
+(c) (1 p.) Carry out the test suggested in (b) for error probability a = 0.01 and state your test decision.
+
+(d) (2 p.) Discuss the normal distribution assumption. To do this, look at qq plots of the data and perform Shapiro-Wilk tests. What conclusion do you reach?
+
+```{r}
+O=rnorm(22,20,3)
+Z=rnorm(22,21.5,3)
+
+boxplot(O,Z)
+
+#we use the t tst
+#H0: muo>=muz
+#Ha: muo<muz
+var.test(O,Z)
+t.test(O,Z, alternative = "less", paired=F,var.equal = T, conf.level = 1-0.01)
+
+shapiro.test(O)
+shapiro.test(Z)
+qqPlot(O)
+qqPlot(Z)
+```
+
+# 21. Rivers
+
+The file R3.tab contains a data set with the depth (T) and flow rate (R) of various rivers.
+
+(a) (2 p.) Read the above file and create a scatter plot of the data Flow velocity versus depth. Create another scatterplot using a simple logarithmic plot. Use the scatter plots to decide whether a straight line or an exponential function is likely to describe the data better.
+
+(b) (2 p.) Use linear regression to determine the parameters of the function to be fitted.
+
+(c) (2 P.) Plot the data in the scatterplot (non-logarithmic) along with the fitted function.
+
+```{r}
+depth=rexp(50, 0.2)
+flow=depth^rnorm(length(depth),0.4,0.1)
+plot(depth, flow)
+model=lm(flow~depth)
+abline(model, col="red")
+plot(log(depth), log(flow))
+model1=lm(log(flow)~log(depth))
+abline(model1, col="red")
+a=exp(model1$coefficients[1])
+b=model1$coefficients[2]
+plot(depth, flow)
+x=0:25
+curve(a*x^b, add=T, col="red")
+```
+
+# 22. Sheep with ticks
+
+In a herd of 60 sheep, each sheep was counted to see how many ticks it had. This data can be found in file R4. tab. For example, 7 sheep had no ticks, 9 sheep had exactly one tick, etc.
+
+(a) (3 p.) You are interested in the random number of ticks on a sheep. Estimate the expected value and variance of this random variable from the data. Specify these values explicitly.
+
+(b) (2 p.) Try to fit a negative binomial distribution to the data. Like the binomial distribution, this distribution has parameters n and p, where the expected value is μ and the μ variance is o2
+
+μ = n(1 - p) /p
+
+var= n(1 - p) / (p\^2)
+
+Use the replacement method to estimate n and p from the data. State the estimates explicitly.
+
+(c) (1 p.) Using the values from (b), make a prediction for the number of sheep with a certain number of ticks. Enter the numbers up to 10 ticks. Judge (only qualitative) how well the prediction agrees with the data. Use dnbinom, see also the documentation.
+
+```{r}
+sheep=c(7, 9, 14,  12,  8,  6,  3,  1)
+zecken=c(0:7)
+cbind(sheep, zecken)
+tot_shep=sum(sheep)
+tot_zeck=sum(sheep*zecken)
+
+p=tot_zeck/total_sheep
+p
+data=rep(zecken, sheep)
+data
+mean(data)
+var(data)
+x_sq=sum(sheep*zecken^2)/total_sheep
+var=x_sq-p^2
+var
+
+p1=(2.66/3.04)^(1/3)
+p1
+n=2.66/((1-p1)*p1)
+n
+
+nw=rnbinom(100,n,p1)
+table(nw)
+```
+
+# 23. Women vs men
+
+```{r}
+n=40
+n_w=24
+n_m=16
+n_w1=18
+n_m1=8
+
+#binomial.test
+
+#Ho: p_sw=p_sm
+#Ha: p_sw!=p_sm
+
+p_sw=n_w1/n_w
+p_sw
+p_sm=n_m1/n_m
+p_sm
+
+binom.test(n_w1, n_w, p=p_sm, alternative="two.sided", conf.level=0.95)
+
+binom.test(n_m1, n_m, p=p_sw, alternative="two.sided", conf.level=0.95)
+```

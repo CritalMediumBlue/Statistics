@@ -9,7 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R1. Runs test of randomness 
+## R1. Runs test of randomness
 
 The data sequence R1.dat describes the amount of dead fish in kg per year, which has been found along a certain river within a period of 16 years between 1995 and 2010. Use the runs test in order to test the hypothesis that the amount of dead fish obeys random fluctuations.
 
@@ -20,30 +20,27 @@ The data sequence R1.dat describes the amount of dead fish in kg per year, which
 
 *Remark:* Read the documentation of the command `rle`. Using `$lengths` you can extract the vector of lengths from the output of `rle`.
 
-
 ## R1. Solution
 
-1. Read the data sequence into your computer and determine the scale of measure.
+1.  Read the data sequence into your computer and determine the scale of measure.
+
 ```{r}
 data <- scan(file="Data/R1dat.sec")
 data <- as.vector(data)
 
 ```
 
-
 The variable (amount of dead fish in kg per year, which has been found along a certain river within a period of 16 years between 1995 and 2010) has a ratio scale, it is metric (continuous).
 
-
-2. Dichotomise the data sequence using the algorithm discussed in the lecture.
+2.  Dichotomise the data sequence using the algorithm discussed in the lecture.
 
 We will use the median as a cut-off criterion. A data point is converted to 0 if it is equal or less than the median and 1 otherwise (in R FALSE corresponds to 0 and TRUE to 1).
-
 
 ```{r}
 (data_dich <- data > median(data))
 ```
 
-3. Use the command `rle` in order to determine the number of runs. What is the test decision? Give all details of the calculation.
+3.  Use the command `rle` in order to determine the number of runs. What is the test decision? Give all details of the calculation.
 
 The command rle (Run Length Encoding) computes the lengths and values of runs of equal values in a vector (cf R help). We can confirm the lengths of the runs comparing it to the output of the previous part.
 
@@ -56,11 +53,9 @@ The number of runs here is 6.
 
 The mean number of runs in a sequence of length n, n0 zeros and n1 ones is
 
-
 $$
 \mu = \frac{2n_0n_1}{n} + 1 \stackrel{\text{here}}{=} 2 \cdot \frac{8 \cdot 8}{16} + 1 = 9
 $$
-
 
 The variance of the number of runs is
 
@@ -75,23 +70,22 @@ $$
 $$
 
 As the number of runs in our data set (6) is included in the interval, we have to accept the hypothesis that the underlying process of finding dead fish is random.
- 
-4. What do you learn concerning the validity of the randomness hypothesis?
 
-The approximation that is used in this test (95% of random experiments have number of runs in the above interval) is only good for n0, n1 ≥ 20. Thus we can’t say anything specific about the randomness of the data set because it is to small. Besides, the runs test has low sensitivity (high error of type II; runs test is test against randomness), thus we might accept randomness although it is false.
+4.  What do you learn concerning the validity of the randomness hypothesis?
 
+The approximation that is used in this test (95% of random experiments have number of runs in the above interval) is only good for n0, n1 ≥ 20. Thus we can't say anything specific about the randomness of the data set because it is to small. Besides, the runs test has low sensitivity (high error of type II; runs test is test against randomness), thus we might accept randomness although it is false.
 
 ## R2. Data analysis
 
-There were altogether 308 soccer games during the 2008 european soccer championship qualification. The number of goals per match is stored in the file R2.dat. 
+There were altogether 308 soccer games during the 2008 european soccer championship qualification. The number of goals per match is stored in the file R2.dat.
 
-1. Create a table of the absolute goal frequencies.
-2. Create a bar chart of the relative goal frecuencies. Create a histogram of relative goal frecuencies. Compare the graphics. Can you identify the "outlier"?
-3. Draw the empirical cumulative distribution function.
+1.  Create a table of the absolute goal frequencies.
+2.  Create a bar chart of the relative goal frecuencies. Create a histogram of relative goal frecuencies. Compare the graphics. Can you identify the "outlier"?
+3.  Draw the empirical cumulative distribution function.
 
 ## R2. Solution
 
-1. Create a table of the absolute goal frequencies.
+1.  Create a table of the absolute goal frequencies.
 
 ```{r}
 
@@ -101,7 +95,7 @@ data <- as.vector(data)
 
 ```
 
-2. Create a bar chart of the relative goal frecuencies. Create a histogram of relative goal frecuencies. Compare the graphics. Can you identify the "outlier"?
+2.  Create a bar chart of the relative goal frecuencies. Create a histogram of relative goal frecuencies. Compare the graphics. Can you identify the "outlier"?
 
 ```{r}
 
@@ -115,11 +109,10 @@ hist(data, freq = FALSE, xlab = "Goals",
 
 The differences are:
 
-- the bar chart has one bar for every number of goals that ocurred in these 308 matches, so you don’t have space between the outlier and the rest
-- the histogram has the breaks in the natural numbers so you can’t see easily the frequency of a specific number of goals, but here you see that there was an outlier without looking on the x-axis
+-   the bar chart has one bar for every number of goals that ocurred in these 308 matches, so you don't have space between the outlier and the rest
+-   the histogram has the breaks in the natural numbers so you can't see easily the frequency of a specific number of goals, but here you see that there was an outlier without looking on the x-axis
 
-
-3. Draw the empirical cumulative distribution function.
+3.  Draw the empirical cumulative distribution function.
 
 ```{r}
 
@@ -127,3 +120,74 @@ plot(ecdf(data), xlab = "Goals", ylab = "Cumulative frequency",
      main = "Empirical cumulative distribution function")
 
 ```
+
+## R3. Waiting times
+
+You wait at a train station for a train. You may take any of two lines which both have one service per hour. Since the train services are not really reliable, it seems realistic to assume that every train arrives uniformly at random in the time interval of one hour. You are interested in how long you have to wait for the arrival of the first train.
+
+i)  Use random numbers from the uniform distribution in order to generate a sequence of $N=1000$ waiting times for the above problem. Plot the empirical cumulative distribution function. Explain its meaning for the above problem. Give an estimate of the average waiting time.
+
+ii) Analyse the waiting time for the first train if there are three lines. What is your estimate of the average waiting time? Can you guess the average waiting time for $n$ lines?
+
+## R3. Solution
+
+```{r}
+N=1000
+x1=runif(N,min = 0,max=1)
+x2=runif(N,min=0,max=1)
+
+wating_times=numeric(N)
+
+for (i in 1:N){
+  wating_times[i]=min(x1[i],x2[i])
+}
+
+mean(wating_times)
+median(wating_times)
+
+plot(ecdf(wating_times), xlab = "Waiting time", ylab = "Cumulative frequency",
+     main = "Empirical cumulative distribution function")
+plot(ecdf(x1), add=TRUE, col="red")
+
+
+legend("bottomright", legend=c("two trains", "one train"), 
+     col=c("black", "red"), lty=1:2, cex=0.8)
+
+
+```
+
+You can see that you will have to wait less if you can take one of the two options (the first train that arrives), than waiting for a single train.
+
+The average waiting time for a single train is 30 minmutes, while the average waiting time for the first of 2 trains is 20 minutes
+
+```{r}
+N=50000
+x1=runif(N)
+x2=runif(N)
+x3=runif(N)
+x4=runif(N)
+
+waiting_time1=numeric(N)
+waiting_time2=numeric(N)
+waiting_time3=numeric(N)
+waiting_time4=numeric(N)
+
+for (i in 1:N) {
+  waiting_time1[i]=min(x1[i])
+  waiting_time2[i]=min(x1[i], x2[i])
+  waiting_time3[i]=min(x1[i], x2[i], x3[i])
+  waiting_time4[i]=min(x1[i], x2[i], x3[i], x4[i])
+}
+
+plot.ecdf(waiting_time1, col="purple")
+plot.ecdf(waiting_time2, add=T, col="blue")
+plot.ecdf(waiting_time3, add=T, col="darkgreen")
+plot.ecdf(waiting_time4, add=T, col="red")
+
+round(mean(waiting_time1),2)
+round(mean(waiting_time2),2)
+round(mean(waiting_time3),2)
+round(mean(waiting_time4),2)
+```
+
+It seems like the mean waiting time is $\frac{1}{n+1}$ hours, $n$ being the number of possible lines.

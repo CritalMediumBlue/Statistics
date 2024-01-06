@@ -318,17 +318,392 @@ Show that $F$ is symmetric in $c$ if and only if $f(c+t)=f(c-t)$ for all $t \geq
 \end{enumerate}
 % Solution 3
 \subsection*{Solution T3}
-  
+   
 \begin{enumerate}
-    \item Show that $F(c+t)=1-F(c-t)$ for all $t \geq 0$ implies the continuity of the cumulative distribution function $F$. (Why is it enough to prove left continuity?)
-    
-As F is a CDF, it is right continuous. We need to show that it is also left continuous.
-We have to show that for any $x \in \mathbb{R}$ and any sequence
+    \item Show that $F(c+t)=1-F(c-t)$ for all $t \geq 0$ implies the continuity of the cumulative distribution function $F$. (Why is it enough to prove left continuity?).
+     
+    \textit{Proof:}
 
+Since we know F is a CDF, we know $F$ has to also be right continuous (because all CDFs are right continuous).  Therefore we only need to show that $F$ is also left continuous at all points in its domain to prove that $F$ is continuous.
+
+We have to show that for any $x \in \mathbb{R}$ and any sequence \{$x_n$\} converging to $x$ from the left (\( x_n \uparrow x \) as \( n \to \infty \)), we have $\lim_{n \to \infty} F(x_n) = F(x)$.
+
+\begin{enumerate}
+    \item \textbf{First case:} $x > c$ 
+    
+    Let $t>0$ such that $x= c+t$. Define $t_n$ such that $x_n=c+t_n$. Since $x_n \uparrow x$, then  \( t_n \uparrow t \) as \( n \to \infty \) 
+
+    \begin{align*}
+        \lim_{n \to \infty} F(x_n) &= \lim_{n \to \infty} F(c+t_n)\\
+        &\stackrel{\text{(1)}}{=} \lim_{n \to \infty} (1-F(c-t_n))\\
+        &= 1-\lim_{n \to \infty} (F(c-t_n))\\
+        &\stackrel{\text{(2)}}{=} 1-F(c-t)\\
+        &\stackrel{\text{(1)}}{=} F(c+t)\\
+        &= F(x)
+    \end{align*}
+
+(1): $F$ is symetric in $c$.
+
+(2): $F$ right continuity: $c-t_n$ is a sequence converging to $c-t$ from the right. 
+
+\item \textbf{Second case:} $x < c$
+
+Same as before, but with $x=c-t$.
+
+Let $t>0$ such that $x= c-t$. Define $t_n$ such that $x_n=c-t_n$. Since $x_n \uparrow x$, then  \( t_n \downarrow t \) as \( n \to \infty \) 
+
+\begin{align*}
+    \lim_{n \to \infty} F(x_n) &= \lim_{n \to \infty} F(c-t_n)\\
+    &\stackrel{\text{(1)}}{=} \lim_{n \to \infty} (1-F(c+t_n))\\
+    &= 1-\lim_{n \to \infty} (F(c+t_n))\\
+    &\stackrel{\text{(2)}}{=} 1-F(c+t)\\
+    &\stackrel{\text{(1)}}{=} F(c-t)\\
+    &= F(x)
+\end{align*}
+
+(1): $F$ is symetric in $c$.
+
+(2): $F$ right continuity: $c+t_n$ is a sequence converging to $c+t$ from the right. 
+
+\item \textbf{Third case:} $x=c$     and      $F(c)=1-F(c)$
+
+  $s_n$ is a sequence converging to $c$ from the left. Let $t_n$ be a sequence such that $s_n =c - t_n$. Since $s_n \uparrow c$, then  \( t_n \downarrow 0 \) as \( n \to \infty \)
+  
+    \begin{align*}
+        \lim_{n \to \infty} F(s_n) &= \lim_{n \to \infty} F(c-t_n)\\
+        &\stackrel{\text{(1)}}{=} 1-\lim_{n \to \infty} F(c+t_n)\\
+        &\stackrel{\text{(2)}}{=} 1-F(c)\\
+        &= F(c)
+    \end{align*}
+
+(1): $F$ is symetric in $c$.
+    
+    (2): $F$ right continuity: $c+t_n$ is a sequence converging to $c$ from the right.
 
 
 \end{enumerate}
 
 
+
+\item Assume that there is a continuous function $f: \mathbb{R} \rightarrow[0, \infty)$ such that
+
+$$
+F(t)=\int_{-\infty}^{t} f(x) d x \quad \forall t \in \mathbb{R}
+$$
+
+and
+
+$$
+\int_{-\infty}^{\infty} f(x) d x=1
+$$
+
+i.e. $F$ has density $f$.
+
+
+Show that $F$ is symmetric in $c$ if and only if $f(c+t)=f(c-t)$ for all $t \geq 0$.
+
+
+\textit{Proof:}
+
+$F$ is symmetric in $c$ 
+\begin{align*}
+\Leftrightarrow \quad \forall t \geq 0 \quad &: \quad F(c+t)=1-F(c-t) \\
+\Leftrightarrow \quad \forall t \geq 0 \quad &: \quad \int_{-\infty}^{c+t} f(x) d x=1-\int_{-\infty}^{c-t} f(x) d x = \int_{c-t}^{\infty} f(x) d x\\
+\Leftrightarrow \quad \forall t \geq 0 \quad &: \quad \int_{-\infty}^{c+t} f(x) d x=\int_{c-t}^{\infty} f(x) d x\\
+\Leftrightarrow \quad \forall t \geq 0 \quad &: \quad \int_{-\infty}^{t} f(c+x) d x=-\int_{t}^{-\infty} f(c-x) d x\\
+\Leftrightarrow \quad \forall t \geq 0 \quad &: \quad \int_{-\infty}^{t} f(c+x) d x=\int_{-\infty}^{t} f(c-x) d x\\
+\Leftrightarrow \quad \forall t \geq 0 \quad &: \quad f(c-t)= \lim_{h \to 0} \frac{F(c-t+h)-F(c-t)}{h}  \\
+&\stackrel{\text{(1)}}{=} \lim_{h \to 0} \frac{1-F(c+t-h)-(1-F(c+t))}{h}\\
+&= \lim_{h \to 0} \frac{F(c+t)-F(c+t-h)}{h} \\
+&= f(c+t)
+\end{align*}
+
+(1) $F$ is symetric in $c$.
+
+\item For a continuous cumulative distribution function $F$, a median of $F$ is any real number $x$ such that $F(x)=1 / 2$. 
+
+\begin{enumerate}
+     
+
+
+    \item Why is a median an important parameter of a distribution?
+
+The median is an important parameter of a distribution because it is the value that divides the distribution in two equal parts. Half of the data points are less than or equal to the median. The other half are greater than or equal to the median. So you know more or less where the "middle" of the data points is. 
+Another reason why the median is an important parameter of a distribution is because it is robust against outliers (not like the mean).
+
+\item For any symmetric $F$, give an example of a median. 
+
+If there is a $c$ such that $F$ is symmetric in $c$, then $c$ is a median of $F$.
+
+\begin{align*}
+    F(c)&=1-F(c)    \\
+    2F(c)&=1\\
+     F(c)&=\frac{1}{2}
+\end{align*}
+
+
+\item May there be more than one median for a given $F$?
+
+Yes, if F is piecewise constant at $\frac{1}{2}$, then every point in the interval where F is constant at $\frac{1}{2}$ is a median of $F$.
+For example, the CDF of the Bernoulli distribution: Every $x \in [0,1)$ is a median of $F$.
+
+
+\item Give a median of the normal distribution $\mathcal{N}\left(\mu, \sigma^{2}\right)$. Is it unique?
+
+The median of the normal distribution is the same as the mean $\mu$, as  the PDF and CDF of the normal distribution are symmetric around $\mu$.
+
+The median is unique, as the CDF is strictly monotonically increasing. (There exists only one c such that the symetry condition is fulfilled.)
+\end{enumerate}
+
+\end{enumerate}
+
+% Question 4
+\section*{T4: Continuum approximation of the geometric distribution}
+
+We consider the following probability mass function:
+
+\[
+f_{p}: \mathbb{N} \rightarrow \mathbb{R}_{+}, \quad k \mapsto \mathbb{P}(\{k\})=p(1-p)^{k-1}
+\]
+where $p \in(0,1)$. The corresponding distribution is the geometric distribution with parameter $p$. Moreover let $g_{\lambda}$ be the following probability density function:
+
+$$
+g_{\lambda}: \mathbb{R} \rightarrow \mathbb{R}_{+}, \quad x \mapsto \lambda e^{-\lambda x} 1_{[0, \infty)}(x)
+$$
+where $\lambda>0$. The corresponding distribution is the exponential distribution with parameter $\lambda$.
+
+(i) Determine the cumulative distribution function $F_{p}$ of the geometric distribution and the cumulative distribution function $G_{\lambda}$ of the exponential distribution.
+
+(ii) Let $\left(p_{n}\right)_{n \in \mathbb{N}}$ be a sequence in $(0,1)$ such that $\lim _{n \rightarrow \infty} n \cdot p_{n}=\lambda$. Prove that
+
+$$
+\lim _{n \rightarrow \infty} F_{p_{n}}(n t)=G_{\lambda}(t), \quad \forall t \in \mathbb{R}
+$$
+
+
+(iii) Explain in your own words what the above result means when modelling rare events on an interval by coin tossing. Give an explicit example from economics, physics or biology.
+
+\textit{
+Hint: If $\left(x_{m}\right)_{m \in \mathbb{N}},\left(y_{m}\right)_{m \in \mathbb{N}}$ are sequences in $\mathbb{R}$ that converge to $x \in \mathbb{R}$ and 1 , respectively, then the following holds:
+}
+
+$$
+\lim _{m \rightarrow \infty}\left(1+\frac{x_{m}}{m}\right)^{m \cdot y_{m}}=e^{x}
+$$
+
+
+% Solution 4
+\subsection*{Solution T4}   
+
+\begin{enumerate}
+    \item Determine the cumulative distribution function $F_{p}$ of the geometric distribution and the cumulative distribution function $G_{\lambda}$ of the exponential distribution.
+    
+    \[
+    F_p(x)=\sum_{k=1}^{\lfloor x \rfloor} f_p(k) \mathbbm{1}_{[1, \infty)}(x)= 
+    \begin{cases}
+        0 & \text{for } x<1\\
+        1-(1-p)^{\lfloor x \rfloor} & \text{for } x \geq 1
+    \end{cases} 
+    \]
+
+    \[
+    = 
+    \begin{cases}
+        0 & \text{for } x<0\\
+        1-(1-p)^{\lfloor x \rfloor} & \text{for } x \geq 0
+    \end{cases}
+    \]
+
+
+    \[
+    \sum _{k=1}^n p(1-p)^{k-1} = \sum _{k=0}^{n-1} p(1-p)^{k} \stackrel{(1)}{=} p \frac{1-(1-p)^n}{1-(1-p)} = 1-(1-p)^n 
+    \]
+
+(1) Geometric series
+
+\end{enumerate}
+
+
+
+\newpage
+
+Let's go through the solution step by step to understand how to determine the cumulative distribution function (CDF) \( F_{p} \) for the geometric distribution.
+
+\subsection*{Step 1: Understanding the Probability Mass Function (PMF)}
+
+The geometric distribution's PMF is given by:
+\[
+f_{p}(k) = p(1-p)^{k-1} \quad \text{for } k \in \mathbb{N},
+\]
+where \( p \) is the probability of success on each trial.
+
+\subsection*{Step 2: Defining the Cumulative Distribution Function (CDF)}
+
+The CDF \( F_{p}(x) \) of the geometric distribution is the sum of the PMF values up to a certain point \( x \). By definition, we have:
+\[
+F_p(x) = \sum_{k=1}^{\lfloor x \rfloor} f_p(k) \quad \text{for } x \geq 1,
+\]
+where \( \lfloor x \rfloor \) denotes the floor function, which gives the greatest integer less than or equal to \( x \).
+
+\subsection*{Step 3: Applying the Indicator Function}
+
+The indicator function \( \mathbbm{1}_{[1, \infty)}(x) \) is equal to 1 for \( x \geq 1 \) and equal to 0 for \( x < 1 \). This function is used to "activate" the PMF sum starting from \( x = 1 \), as there are no probabilities to sum for \( x < 1 \) in the geometric distribution.
+
+The CDF then reads:
+\[
+F_p(x)=\sum_{k=1}^{\lfloor x \rfloor} f_p(k) \mathbbm{1}_{[1, \infty)}(x).
+\]
+
+\subsection*{Step 4: Handling the CDF for \( x < 1 \)}
+
+Since we cannot have negative probabilities and the smallest natural number is 1, the CDF \( F_{p}(x) \) is defined as 0 for \( x < 1 \), as no trials would have occurred (geometrically speaking) before \( x = 1 \).
+
+\subsection*{Step 5: Defining Cases for the CDF}
+
+The CDF \( F_{p}(x) \) can then be expressed in a piecewise manner as:
+\[
+F_p(x) = 
+\begin{cases}
+0 & \text{for } x < 1, \\
+1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 1,
+\end{cases}
+\]
+reflecting the distinct behavior depending on whether \( x \) is before or after the start of the distribution.
+
+\subsection*{Step 6: Expanding the CDF for \( x<0 \)}
+
+For \( x < 0 \), the CDF remains 0 since we cannot have trials at negative counts. The piecewise definition could equivalently start from \( x = 0 \):
+
+\[
+F_p(x) = 
+\begin{cases}
+0 & \text{for } x < 0, \\
+1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 0.
+\end{cases}
+\]
+
+\subsection*{Step 7: Understanding the Geometric Series}
+
+The sum of the geometric series is given by:
+\[
+\sum _{k=1}^n p(1-p)^{k-1} = \sum _{k=0}^{n-1} p(1-p)^{k} = p \frac{1 - (1-p)^n}{1-(1-p)} = 1 - (1-p)^n,
+\]
+where \( n = \lfloor x \rfloor \) for our CDF.
+
+This equation (1) is an algebraic manipulation of the geometric series sum that takes advantage of the closed-form formula for the sum of a finite geometric series
+
+
+\newpage
+
+Indeed, there is a discrepancy between those steps that needs clarification. Let's analyze the transition from step 5 to step 6 more critically.
+
+The cumulative distribution function \( F_p(x) \) for the geometric distribution is supposed to return the sum of the probabilities from the first trial up to the largest integer less than or equal to \( x \) (denoted by \( \lfloor x \rfloor \)). Specifically, the geometric distribution is only defined for positive integers \( k \), meaning the distribution actually starts at \( k = 1 \).
+
+For the geometric distribution, the CDF \( F_{p}(x) \) must be 0 for all \( x < 1 \), because no event (no "success" in the sequence of Bernoulli trials) can occur before the first trial. Hence, the original CDF in step 5 is correct when it states:
+
+\[
+F_p(x) = 
+\begin{cases}
+0 & \text{for } x < 1, \\
+1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 1.
+\end{cases}
+\]
+
+The discrepancy arises in the transition to step 6, where the CDF is written to have a switch point at \( x = 0 \) rather than at \( x = 1 \). This would imply that there's some probability mass for \( x \) in the interval \( [0, 1) \), which is not correct for the geometric distribution—it must be 0 for any \( x < 1 \).
+
+So, the step 6 transition is unwarranted; the CDF should remain as:
+
+\[
+F_p(x) = 
+\begin{cases}
+0 & \text{for } x < 1, \\
+1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 1,
+\end{cases}
+\]
+
+This accurately states that the probability (cumulative) is 0 before the first trial (for \( x < 1 \)), and it begins to increase from the first trial onwards \( (x \geq 1) \). There is no need to redefine the regions for \( x < 0 \) versus \( x < 1 \) since the former is simply a subset of the latter, and the CDF value in both regions is 0.
+
+\newpage
+
+but please notice that $\lfloor x \rfloor=0$ for any $x \in [0,1)$. If $\lfloor x \rfloor=0$, then it means that $1 - (1 - p)^{\lfloor x \rfloor}=0 $ even for $x \in [0,1)$. I think that's why we can write 
+
+\[
+F_p(x) = 
+\begin{cases}
+0 & \text{for } x < 0, \\
+1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 0.
+\end{cases}
+\]
+
+instead of 
+
+
+\[
+F_p(x) =
+\begin{cases}
+0 & \text{for } x < 1, \\
+1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 1.
+\end{cases}
+\]
+
+What do you think?. Is that correct?
+
+\newpage
+
+You are correct in pointing out that for \( x \) in the interval \([0,1)\), the floor function \( \lfloor x \rfloor \) yields 0. Therefore, \( 1 - (1 - p)^{\lfloor x \rfloor} \) indeed equals 0 for any \( x \) in this interval because \( (1 - p)^0 \) equals 1, resulting in \( 1 - 1 = 0 \).
+
+Given this accurate observation, it is indeed correct that we can express the cumulative distribution function \( F_p(x) \) for the geometric distribution as:
+
+\[
+F_p(x) = 
+\begin{cases}
+0 & \text{for } x < 0, \\
+1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 0.
+\end{cases}
+\]
+
+This piecewise function is equivalent to the prior expression because \( F_p(x) \) is 0 for any \( x \) in the interval \([- \infty, 1)\). The switch point at \( x = 0 \) is acceptable, as it aligns with the fact that there cannot be any accumulated probability mass below \( x = 1 \).
+
+Therefore, it is not only acceptable but also correct. It may initially seem somewhat non-intuitive, but the floor function ensures that probabilities are only counted starting from the first success, which, given the context of the geometric distribution, cannot happen before the first trial.
+
+In summary, the statement that redefines the switch point at \( x = 0 \) is correct and appropriately represents the geometric distribution.
+
+
+\newpage
+
+There's something I still do not understand. 
+
+I know that the geometric distribution's PMF is given by:
+\[
+f_{p}(k) = p(1-p)^{k-1} \quad \text{for } k \in \mathbb{N},
+\]
+where \( p \) is the probability of success on each trial.
+
+I also know that the CDF \( F_{p}(x) \) of the geometric distribution is the sum of the PMF values up to a certain point \( x \). By definition, we have:
+\[
+F_p(x) = \sum_{k=1}^{\lfloor x \rfloor} f_p(k) \quad \text{for } x \geq 1,
+\]
+where \( \lfloor x \rfloor \) denotes the floor function, which gives the greatest integer less than or equal to \( x \).
+
+I also understand that the indicator function \( \mathbbm{1}_{[1, \infty)}(x) \) is equal to 1 for \( x \geq 1 \) and equal to 0 for \( x < 1 \). This function is used to "activate" the PMF sum starting from \( x = 1 \), as there are no probabilities to sum for \( x < 1 \) in the geometric distribution.
+
+The CDF then reads:
+\[
+F_p(x)=\sum_{k=1}^{\lfloor x \rfloor} f_p(k) \mathbbm{1}_{[1, \infty)}(x).
+\]
+
+
+What I really do not understand is why the CDF \( F_{p}(x) \) can be expressed in a piecewise manner as:
+\[
+F_p(x) = 
+\begin{cases}
+0 & \text{for } x < 1, \\
+1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 1,
+\end{cases}
+\]
+
+
+
+If $f_{p}(k) = p(1-p)^{k-1}$,  here does the $1 - (1 - p)^{\lfloor x \rfloor}$ come from?
 
 \end{document}
