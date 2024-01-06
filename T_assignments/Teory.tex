@@ -706,4 +706,46 @@ F_p(x) =
 
 If $f_{p}(k) = p(1-p)^{k-1}$,  here does the $1 - (1 - p)^{\lfloor x \rfloor}$ come from?
 
+
+\newpage
+
+Certainly, let's clarify how the cumulative distribution function \( F_p(x) \) is derived from the probability mass function \( f_p(k) \).
+
+Given that the PMF of the geometric distribution is defined by
+\[
+f_p(k) = p(1-p)^{k-1} \quad \text{for } k \in \mathbb{N},
+\]
+the PMF tells us the probability that the first success occurs on the \( k \)-th trial.
+
+The CDF \( F_p(x) \) is defined as the probability that the first success occurs on or before a certain value \( x \). Thus, if we want to find the CDF at some point \( x \), we need to sum up the probabilities of success from the first trial up to the \( \lfloor x \rfloor \)-th trial, since \( \lfloor x \rfloor \) is the largest integer less than or equal to \( x \), effectively counting all the trials that might have occurred by the point \( x \).
+
+The sum for \( F_p(x) \) when \( x \geq 1 \) is
+
+\[
+F_p(x) = \sum_{k=1}^{\lfloor x \rfloor} p(1-p)^{k-1}.
+\]
+
+This is an example of a finite geometric series, where we sum the terms of the form \( p(1-p)^{k-1} \) from \( k=1 \) to \( k=\lfloor x \rfloor \). The sum of a finite geometric series can be found using the formula
+
+\[
+\sum_{k=0}^{n-1} ar^k = a \frac{1-r^n}{1-r},
+\]
+where \( a \) is the first term and \( r \) is the common ratio.
+
+Applying this to the geometric series sum with \( a = p \) and \( r = 1 - p \), and adjusting indices to match our sum for \( k \) starting from 1, we have
+
+\[
+\sum_{k=1}^{\lfloor x \rfloor} p(1-p)^{k-1} = p \frac{1-(1-p)^{\lfloor x \rfloor}}{1-(1-p)}.
+\]
+
+Since \( 1 - (1 - p) = p \), the \( p \) cancels out, and we are left with
+
+\[
+F_p(x) = 1 - (1-p)^{\lfloor x \rfloor}.
+\]
+
+This expression gives us the probability of having the first success on or before trial number \( \lfloor x \rfloor \). Hence, it is used to express the CDF \( F_p(x) \) for \( x \geq 1 \) as shown. For \( x < 1 \), the CDF is 0 because, by definition, no success could have occurred before the first trial.
+
+
+
 \end{document}
