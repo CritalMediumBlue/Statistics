@@ -342,9 +342,11 @@ We have to show that for any $x \in \mathbb{R}$ and any sequence \{$x_n$\} conve
         &= F(x)
     \end{align*}
 
+    {\footnotesize
 (1): $F$ is symetric in $c$.
 
 (2): $F$ right continuity: $c-t_n$ is a sequence converging to $c-t$ from the right. 
+    }
 
 \item \textbf{Second case:} $x < c$
 
@@ -360,11 +362,11 @@ Let $t>0$ such that $x= c-t$. Define $t_n$ such that $x_n=c-t_n$. Since $x_n \up
     &\stackrel{\text{(1)}}{=} F(c-t)\\
     &= F(x)
 \end{align*}
-
+{\footnotesize
 (1): $F$ is symetric in $c$.
 
 (2): $F$ right continuity: $c+t_n$ is a sequence converging to $c+t$ from the right. 
-
+}
 \item \textbf{Third case:} $x=c$     and      $F(c)=1-F(c)$
 
   $s_n$ is a sequence converging to $c$ from the left. Let $t_n$ be a sequence such that $s_n =c - t_n$. Since $s_n \uparrow c$, then  \( t_n \downarrow 0 \) as \( n \to \infty \)
@@ -375,11 +377,12 @@ Let $t>0$ such that $x= c-t$. Define $t_n$ such that $x_n=c-t_n$. Since $x_n \up
         &\stackrel{\text{(2)}}{=} 1-F(c)\\
         &= F(c)
     \end{align*}
-
+    {\footnotesize
 (1): $F$ is symetric in $c$.
     
     (2): $F$ right continuity: $c+t_n$ is a sequence converging to $c$ from the right.
 
+    }
 
 \end{enumerate}
 
@@ -417,9 +420,9 @@ $F$ is symmetric in $c$
 &= \lim_{h \to 0} \frac{F(c+t)-F(c+t-h)}{h} \\
 &= f(c+t)
 \end{align*}
-
+{\footnotesize
 (1) $F$ is symetric in $c$.
-
+}
 \item For a continuous cumulative distribution function $F$, a median of $F$ is any real number $x$ such that $F(x)=1 / 2$. 
 
 \begin{enumerate}
@@ -498,253 +501,77 @@ $$
 \begin{enumerate}
     \item Determine the cumulative distribution function $F_{p}$ of the geometric distribution and the cumulative distribution function $G_{\lambda}$ of the exponential distribution.
     
+
+    For the cumulative distribution function $F_p$ of the geometric distribution $f_p$, we have $F_p: \mathbb{R} \rightarrow [0,1]$
+
     \[
     F_p(x)=\sum_{k=1}^{\lfloor x \rfloor} f_p(k) \mathbbm{1}_{[1, \infty)}(x)= 
     \begin{cases}
         0 & \text{for } x<1\\
-        1-(1-p)^{\lfloor x \rfloor} & \text{for } x \geq 1
+        \sum_{k=1}^{\lfloor x \rfloor} f_p(k)  & \text{for } x \geq 1
     \end{cases} 
     \]
 
-    \[
-    = 
+\[
+    \sum_{k=1}^{\lfloor x \rfloor} f_p(k) = \sum_{k=1}^{\lfloor x \rfloor} p(1-p)^{k-1} = \sum_{k=0}^{\lfloor x \rfloor-1} p(1-p)^{k}    \stackrel{(1)}{=} p \frac{1-(1-p)^{\lfloor x \rfloor}}{1-(1-p)} = 1-(1-p)^{\lfloor x \rfloor}
+\]
+
+{\footnotesize in (1) we applied the closed form formula for geometric series}
+
+Then we have
+\[
+    F_p(x)= 
+    \begin{cases}
+        0 & \text{for } x<1\\
+        1-(1-p)^{\lfloor x \rfloor}  & \text{for } x \geq 1
+    \end{cases} 
+    \]
+
+Because $\lfloor x \rfloor$ is the greatest integer less than or equal to $x$, then
+\[
+    1-(1-p)^{\lfloor x \rfloor} =0 \quad \forall x \in [0,1)
+\]
+
+Then, we can rewrite $F_p(x)$ as
+
+
+\[
+    F_p(x)= 
     \begin{cases}
         0 & \text{for } x<0\\
-        1-(1-p)^{\lfloor x \rfloor} & \text{for } x \geq 0
+        1-(1-p)^{\lfloor x \rfloor}  & \text{for } x \geq 0
+    \end{cases} 
+\]
+
+
+
+For the cumulative distribution function $G_\lambda$ of the exponential distribution $g_\lambda$, we have $G_\lambda: \mathbb{R} \rightarrow [0,1]$
+
+
+\[
+    G_\lambda(x)=\int_{-\infty}^{x} g_\lambda(t) \mathbbm{1}_{[0, \infty)}(t) dt= \int_{-\infty}^{x} \lambda e^{-\lambda t} \mathbbm{1}_{[0, \infty)}(t) dt = \begin{cases}
+        0 & \text{for } x<0\\
+        \int_{0}^{x} \lambda e^{-\lambda t} dt  & \text{for } x \geq 0
     \end{cases}
-    \]
+\]
 
+\[
+     \int_{0}^{x} \lambda e^{-\lambda t} dt = \left[-e^{-\lambda t}\right]_{0}^{x} = -e^{-\lambda x}+1    
+\]
 
-    \[
-    \sum _{k=1}^n p(1-p)^{k-1} = \sum _{k=0}^{n-1} p(1-p)^{k} \stackrel{(1)}{=} p \frac{1-(1-p)^n}{1-(1-p)} = 1-(1-p)^n 
-    \]
+Then we have
 
-(1) Geometric series
+\[
+    G_\lambda(x)= \begin{cases}
+        0 & \text{for } x<0\\
+        -e^{-\lambda x}+1  & \text{for } x \geq 0
+    \end{cases}
+\]
+
 
 \end{enumerate}
 
 
-
-\newpage
-
-Let's go through the solution step by step to understand how to determine the cumulative distribution function (CDF) \( F_{p} \) for the geometric distribution.
-
-\subsection*{Step 1: Understanding the Probability Mass Function (PMF)}
-
-The geometric distribution's PMF is given by:
-\[
-f_{p}(k) = p(1-p)^{k-1} \quad \text{for } k \in \mathbb{N},
-\]
-where \( p \) is the probability of success on each trial.
-
-\subsection*{Step 2: Defining the Cumulative Distribution Function (CDF)}
-
-The CDF \( F_{p}(x) \) of the geometric distribution is the sum of the PMF values up to a certain point \( x \). By definition, we have:
-\[
-F_p(x) = \sum_{k=1}^{\lfloor x \rfloor} f_p(k) \quad \text{for } x \geq 1,
-\]
-where \( \lfloor x \rfloor \) denotes the floor function, which gives the greatest integer less than or equal to \( x \).
-
-\subsection*{Step 3: Applying the Indicator Function}
-
-The indicator function \( \mathbbm{1}_{[1, \infty)}(x) \) is equal to 1 for \( x \geq 1 \) and equal to 0 for \( x < 1 \). This function is used to "activate" the PMF sum starting from \( x = 1 \), as there are no probabilities to sum for \( x < 1 \) in the geometric distribution.
-
-The CDF then reads:
-\[
-F_p(x)=\sum_{k=1}^{\lfloor x \rfloor} f_p(k) \mathbbm{1}_{[1, \infty)}(x).
-\]
-
-\subsection*{Step 4: Handling the CDF for \( x < 1 \)}
-
-Since we cannot have negative probabilities and the smallest natural number is 1, the CDF \( F_{p}(x) \) is defined as 0 for \( x < 1 \), as no trials would have occurred (geometrically speaking) before \( x = 1 \).
-
-\subsection*{Step 5: Defining Cases for the CDF}
-
-The CDF \( F_{p}(x) \) can then be expressed in a piecewise manner as:
-\[
-F_p(x) = 
-\begin{cases}
-0 & \text{for } x < 1, \\
-1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 1,
-\end{cases}
-\]
-reflecting the distinct behavior depending on whether \( x \) is before or after the start of the distribution.
-
-\subsection*{Step 6: Expanding the CDF for \( x<0 \)}
-
-For \( x < 0 \), the CDF remains 0 since we cannot have trials at negative counts. The piecewise definition could equivalently start from \( x = 0 \):
-
-\[
-F_p(x) = 
-\begin{cases}
-0 & \text{for } x < 0, \\
-1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 0.
-\end{cases}
-\]
-
-\subsection*{Step 7: Understanding the Geometric Series}
-
-The sum of the geometric series is given by:
-\[
-\sum _{k=1}^n p(1-p)^{k-1} = \sum _{k=0}^{n-1} p(1-p)^{k} = p \frac{1 - (1-p)^n}{1-(1-p)} = 1 - (1-p)^n,
-\]
-where \( n = \lfloor x \rfloor \) for our CDF.
-
-This equation (1) is an algebraic manipulation of the geometric series sum that takes advantage of the closed-form formula for the sum of a finite geometric series
-
-
-\newpage
-
-Indeed, there is a discrepancy between those steps that needs clarification. Let's analyze the transition from step 5 to step 6 more critically.
-
-The cumulative distribution function \( F_p(x) \) for the geometric distribution is supposed to return the sum of the probabilities from the first trial up to the largest integer less than or equal to \( x \) (denoted by \( \lfloor x \rfloor \)). Specifically, the geometric distribution is only defined for positive integers \( k \), meaning the distribution actually starts at \( k = 1 \).
-
-For the geometric distribution, the CDF \( F_{p}(x) \) must be 0 for all \( x < 1 \), because no event (no "success" in the sequence of Bernoulli trials) can occur before the first trial. Hence, the original CDF in step 5 is correct when it states:
-
-\[
-F_p(x) = 
-\begin{cases}
-0 & \text{for } x < 1, \\
-1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 1.
-\end{cases}
-\]
-
-The discrepancy arises in the transition to step 6, where the CDF is written to have a switch point at \( x = 0 \) rather than at \( x = 1 \). This would imply that there's some probability mass for \( x \) in the interval \( [0, 1) \), which is not correct for the geometric distribution—it must be 0 for any \( x < 1 \).
-
-So, the step 6 transition is unwarranted; the CDF should remain as:
-
-\[
-F_p(x) = 
-\begin{cases}
-0 & \text{for } x < 1, \\
-1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 1,
-\end{cases}
-\]
-
-This accurately states that the probability (cumulative) is 0 before the first trial (for \( x < 1 \)), and it begins to increase from the first trial onwards \( (x \geq 1) \). There is no need to redefine the regions for \( x < 0 \) versus \( x < 1 \) since the former is simply a subset of the latter, and the CDF value in both regions is 0.
-
-\newpage
-
-but please notice that $\lfloor x \rfloor=0$ for any $x \in [0,1)$. If $\lfloor x \rfloor=0$, then it means that $1 - (1 - p)^{\lfloor x \rfloor}=0 $ even for $x \in [0,1)$. I think that's why we can write 
-
-\[
-F_p(x) = 
-\begin{cases}
-0 & \text{for } x < 0, \\
-1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 0.
-\end{cases}
-\]
-
-instead of 
-
-
-\[
-F_p(x) =
-\begin{cases}
-0 & \text{for } x < 1, \\
-1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 1.
-\end{cases}
-\]
-
-What do you think?. Is that correct?
-
-\newpage
-
-You are correct in pointing out that for \( x \) in the interval \([0,1)\), the floor function \( \lfloor x \rfloor \) yields 0. Therefore, \( 1 - (1 - p)^{\lfloor x \rfloor} \) indeed equals 0 for any \( x \) in this interval because \( (1 - p)^0 \) equals 1, resulting in \( 1 - 1 = 0 \).
-
-Given this accurate observation, it is indeed correct that we can express the cumulative distribution function \( F_p(x) \) for the geometric distribution as:
-
-\[
-F_p(x) = 
-\begin{cases}
-0 & \text{for } x < 0, \\
-1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 0.
-\end{cases}
-\]
-
-This piecewise function is equivalent to the prior expression because \( F_p(x) \) is 0 for any \( x \) in the interval \([- \infty, 1)\). The switch point at \( x = 0 \) is acceptable, as it aligns with the fact that there cannot be any accumulated probability mass below \( x = 1 \).
-
-Therefore, it is not only acceptable but also correct. It may initially seem somewhat non-intuitive, but the floor function ensures that probabilities are only counted starting from the first success, which, given the context of the geometric distribution, cannot happen before the first trial.
-
-In summary, the statement that redefines the switch point at \( x = 0 \) is correct and appropriately represents the geometric distribution.
-
-
-\newpage
-
-There's something I still do not understand. 
-
-I know that the geometric distribution's PMF is given by:
-\[
-f_{p}(k) = p(1-p)^{k-1} \quad \text{for } k \in \mathbb{N},
-\]
-where \( p \) is the probability of success on each trial.
-
-I also know that the CDF \( F_{p}(x) \) of the geometric distribution is the sum of the PMF values up to a certain point \( x \). By definition, we have:
-\[
-F_p(x) = \sum_{k=1}^{\lfloor x \rfloor} f_p(k) \quad \text{for } x \geq 1,
-\]
-where \( \lfloor x \rfloor \) denotes the floor function, which gives the greatest integer less than or equal to \( x \).
-
-I also understand that the indicator function \( \mathbbm{1}_{[1, \infty)}(x) \) is equal to 1 for \( x \geq 1 \) and equal to 0 for \( x < 1 \). This function is used to "activate" the PMF sum starting from \( x = 1 \), as there are no probabilities to sum for \( x < 1 \) in the geometric distribution.
-
-The CDF then reads:
-\[
-F_p(x)=\sum_{k=1}^{\lfloor x \rfloor} f_p(k) \mathbbm{1}_{[1, \infty)}(x).
-\]
-
-
-What I really do not understand is why the CDF \( F_{p}(x) \) can be expressed in a piecewise manner as:
-\[
-F_p(x) = 
-\begin{cases}
-0 & \text{for } x < 1, \\
-1 - (1 - p)^{\lfloor x \rfloor} & \text{for } x \geq 1,
-\end{cases}
-\]
-
-
-
-If $f_{p}(k) = p(1-p)^{k-1}$,  here does the $1 - (1 - p)^{\lfloor x \rfloor}$ come from?
-
-
-\newpage
-
-Certainly, let's clarify how the cumulative distribution function \( F_p(x) \) is derived from the probability mass function \( f_p(k) \).
-
-Given that the PMF of the geometric distribution is defined by
-\[
-f_p(k) = p(1-p)^{k-1} \quad \text{for } k \in \mathbb{N},
-\]
-the PMF tells us the probability that the first success occurs on the \( k \)-th trial.
-
-The CDF \( F_p(x) \) is defined as the probability that the first success occurs on or before a certain value \( x \). Thus, if we want to find the CDF at some point \( x \), we need to sum up the probabilities of success from the first trial up to the \( \lfloor x \rfloor \)-th trial, since \( \lfloor x \rfloor \) is the largest integer less than or equal to \( x \), effectively counting all the trials that might have occurred by the point \( x \).
-
-The sum for \( F_p(x) \) when \( x \geq 1 \) is
-
-\[
-F_p(x) = \sum_{k=1}^{\lfloor x \rfloor} p(1-p)^{k-1}.
-\]
-
-This is an example of a finite geometric series, where we sum the terms of the form \( p(1-p)^{k-1} \) from \( k=1 \) to \( k=\lfloor x \rfloor \). The sum of a finite geometric series can be found using the formula
-
-\[
-\sum_{k=0}^{n-1} ar^k = a \frac{1-r^n}{1-r},
-\]
-where \( a \) is the first term and \( r \) is the common ratio.
-
-Applying this to the geometric series sum with \( a = p \) and \( r = 1 - p \), and adjusting indices to match our sum for \( k \) starting from 1, we have
-
-\[
-\sum_{k=1}^{\lfloor x \rfloor} p(1-p)^{k-1} = p \frac{1-(1-p)^{\lfloor x \rfloor}}{1-(1-p)}.
-\]
-
-Since \( 1 - (1 - p) = p \), the \( p \) cancels out, and we are left with
-
-\[
-F_p(x) = 1 - (1-p)^{\lfloor x \rfloor}.
-\]
-
-This expression gives us the probability of having the first success on or before trial number \( \lfloor x \rfloor \). Hence, it is used to express the CDF \( F_p(x) \) for \( x \geq 1 \) as shown. For \( x < 1 \), the CDF is 0 because, by definition, no success could have occurred before the first trial.
 
 
 
